@@ -1,0 +1,27 @@
+# Note: Firebase web config (apiKey, etc.) is NOT a secret — those values are
+# meant to identify the Firebase project from a browser and are visible to any
+# visitor anyway. Security comes from Firestore/Storage Rules and Auth.
+# So we COMMIT firebase-config.js. If you change your mind, uncomment the line:
+# assets/js/firebase-config.js
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+
+# Node (if you add tooling later)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Local env (any future server-side secrets)
+.env
+.env.local
+.env.production
+
+# Build output (none right now — static site)
+dist/
+build/

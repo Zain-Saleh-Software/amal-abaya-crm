@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AMAL ABAYA — Timeless elegance, crafted in Palestine. Modern abayas and modest wear." />
+  <meta name="theme-color" content="#0a0a0a" />
+  <title>AMAL ABAYA — Heritage in every thread</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css" />
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230a0a0a%22/><text x=%2250%22 y=%2266%22 font-family=%22Georgia%22 font-size=%2256%22 fill=%22%23d4af37%22 text-anchor=%22middle%22>ع</text></svg>" />
+</head>
+<body dir="ltr">
+  <div id="app"></div>
+
+  <!-- Firebase web config (gitignored real version; example committed). Must load FIRST as a classic script. -->
+  <script src="assets/js/firebase-config.js"></script>
+
+  <!-- i18n + UI logic as classic scripts (they only use Amal inside functions, never at top-level). -->
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/storefront.js"></script>
+  <script src="assets/js/admin.js"></script>
+
+  <!-- Firebase client is an ES module; it sets window.Amal then app.js starts the router. -->
+  <script type="module" src="assets/js/firebase-client.js"></script>
+  <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>

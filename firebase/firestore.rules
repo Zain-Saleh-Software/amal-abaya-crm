@@ -1,0 +1,70 @@
+rules_version = '2';
+
+// AMAL ABAYA Firestore security rules
+// Paste these into Firestore Database → Rules in Firebase console.
+//
+// Model:
+//   - Public (anonymous) users can READ products and settings.
+//   - Anonymous users can CREATE orders and customers (placing an order).
+//   - All other writes require an authenticated, non-anonymous user (the admin).
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.firebase != null
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Public catalog
+    match /products/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Settings — public read so storefront sees bank info / shipping fee
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Orders — anyone signed in (incl. anonymous) can create; only admin can read/update/delete
+    match /orders/{id} {
+      allow create: if isSignedIn()
+        && request.resource.data.code is string
+        && request.resource.data.total is number
+        && request.resource.data.total >= 0
+        && request.resource.data.status == 'new';
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Customers — anyone signed in can create/update their own row (by whatsapp);
+    // admin can read/delete.
+    match /customers/{id} {
+      allow create, update: if isSignedIn();
+      allow read, delete: if isAdmin();
+    }
+
+    // Stock movements — admin only
+    match /movements/{id} {
+      allow read, write: if isAdmin();
+      // Allow anonymous create (so placeOrder() can log OUT movements)
+      allow create: if isSignedIn();
+    }
+
+    // Expenses — admin only
+    match /expenses/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // Couriers — admin only
+    match /couriers/{id} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

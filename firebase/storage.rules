@@ -1,0 +1,44 @@
+rules_version = '2';
+
+// AMAL ABAYA Cloud Storage security rules
+// Paste into Firebase Storage → Rules in the console.
+//
+//   - Anyone signed in (incl. anonymous) can upload to /payment-proofs/
+//     (so customers can attach bank-transfer screenshots).
+//   - Only admin can upload to /products/.
+//   - Public read on both (URLs are unguessable; admin can rotate).
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.firebase != null
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function smallEnough() {
+      // 5 MB max
+      return request.resource.size < 5 * 1024 * 1024;
+    }
+
+    match /payment-proofs/{file=**} {
+      allow read: if true;
+      allow create: if isSignedIn() && isImage() && smallEnough();
+      allow update, delete: if isAdmin();
+    }
+
+    match /products/{file=**} {
+      allow read: if true;
+      allow write: if isAdmin() && isImage() && smallEnough();
+    }
+  }
+}
