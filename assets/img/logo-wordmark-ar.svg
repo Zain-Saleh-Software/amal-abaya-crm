@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 220" fill="none" preserveAspectRatio="xMidYMid meet">
+  <style>
+    .amal-word-ar { font-family: 'Markazi Text', 'Tajawal', 'Cairo', sans-serif; font-weight: 700; font-size: 140px; }
+    .amal-sub-ar  { font-family: 'Tajawal', 'Cairo', sans-serif; font-weight: 400; font-size: 32px; letter-spacing: 0; }
+  </style>
+  <text x="300" y="135" class="amal-word-ar" fill="currentColor" text-anchor="middle">عبايات أمل</text>
+  <text x="300" y="185" class="amal-sub-ar"  fill="currentColor" text-anchor="middle">عبايات وأكثر</text>
+</svg>
