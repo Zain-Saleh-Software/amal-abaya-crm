@@ -44,17 +44,20 @@ function renderStorefront() {
     </header>
 
     <section class="hero">
-      <div class="hero-tag">${s.collectionTag || "NEW COLLECTION"}</div>
+      <div class="hero-eyebrow">${s.collectionTag || "NEW COLLECTION"}</div>
       <h1>${t("hero_title")}</h1>
       <p>${t("hero_sub")}</p>
       <button class="btn btn-primary" onclick="document.getElementById('collection').scrollIntoView({behavior:'smooth'})">
-        ${t("shop_now")}
+        ${t("shop_now")} →
       </button>
     </section>
 
     <section class="section" id="collection">
-      <h2 class="section-title">${t("our_collection")}</h2>
-      <p class="section-sub">${t("collection_sub")}</p>
+      <div class="section-head">
+        <div class="section-eyebrow">★ ${s.collectionTag || ""} ★</div>
+        <h2 class="section-title">${t("our_collection")}</h2>
+        <p class="section-sub">${t("collection_sub")}</p>
+      </div>
       <div class="product-grid" id="productGrid">
         ${_products.length ? _products.map(productCard).join("") :
           `<div class="empty" style="grid-column: 1/-1;">
@@ -64,9 +67,10 @@ function renderStorefront() {
       </div>
     </section>
 
-    <footer style="text-align:center;padding:36px 16px;border-top:1px solid var(--border-soft);color:var(--text-mute);font-size:13px;">
-      <div style="margin-bottom:8px;">${t("brand")} · ${s.instagram || ""}</div>
-      <button class="btn btn-ghost btn-sm" onclick="openAdminLogin()">${t("admin_login")}</button>
+    <footer class="site-footer">
+      <div class="brand">${t("brand")}</div>
+      <div class="footer-meta">${s.instagram || ""} · MADE WITH CARE IN PALESTINE</div>
+      <button class="btn btn-outline btn-sm" onclick="openAdminLogin()">${t("admin_login")}</button>
     </footer>
   `;
 }
@@ -90,8 +94,10 @@ function productCard(p) {
       <div class="product-info">
         <h3 class="product-name">${esc(name)}</h3>
         <div class="product-desc">${esc(desc)}</div>
-        <div class="product-price">${fmtPrice(p.price)}</div>
-        <div class="product-stock ${stockClass}">${stockLabel}</div>
+        <div class="product-meta">
+          <div class="product-price">${fmtPrice(p.price)}</div>
+          <div class="product-stock ${stockClass}">${stockLabel}</div>
+        </div>
       </div>
     </article>`;
 }
@@ -208,8 +214,8 @@ function renderCart() {
   const lang = getLang();
 
   return `
-    <div style="padding:18px 22px;border-bottom:1px solid var(--border-soft);display:flex;justify-content:space-between;align-items:center;">
-      <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;">${t("cart")}</h3>
+    <div class="drawer-head">
+      <h3>${t("cart")}</h3>
       <button class="close-btn" onclick="closeCart()">×</button>
     </div>
     <div class="cart-items">
@@ -232,7 +238,7 @@ function renderCart() {
         </div>`;
       }).join("") : `<div class="empty"><div class="empty-icon">✦</div><div>${t("empty_cart")}</div></div>`}
     </div>
-    <div class="cart-foot">
+    <div class="drawer-foot">
       <div class="cart-row"><span>${t("subtotal")}</span><span>${fmtPrice(subtotal)}</span></div>
       <div class="cart-row"><span>${t("shipping")}</span><span>${fmtPrice(shipping)}</span></div>
       <div class="cart-row total"><span>${t("total")}</span><span>${fmtPrice(total)}</span></div>
