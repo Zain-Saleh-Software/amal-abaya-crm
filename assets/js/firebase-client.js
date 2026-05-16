@@ -172,26 +172,20 @@ async function placeOrder({ customer, items, shippingFee, paymentProofDataURL, n
     trackingNumber: null
   });
 
-  // 4. Upsert customer (one doc per whatsapp number)
+  // 4. Insert customer record. Rules only let anonymous users CREATE on
+  //    customers (not list/query), so we always insert a new row here and
+  //    let the admin panel dedupe by whatsapp client-side.
   if (customer && customer.whatsapp) {
-    const existing = await fetchAll("customers", { where: ["whatsapp", "==", customer.whatsapp] });
-    if (existing.length) {
-      const c = existing[0];
-      await updateDocById("customers", c.id, {
-        name: customer.name || c.name,
-        city: customer.city || c.city,
-        address: customer.address || c.address,
-        orderCount: (c.orderCount || 0) + 1,
-        lifetimeSpend: (c.lifetimeSpend || 0) + total,
-        lastOrderAt: new Date().toISOString()
-      });
-    } else {
+    try {
       await createDoc("customers", {
         ...customer,
         orderCount: 1,
         lifetimeSpend: total,
         lastOrderAt: new Date().toISOString()
       });
+    } catch (e) {
+      // non-fatal: order is already saved
+      console.warn("Customer record write failed:", e.message);
     }
   }
 

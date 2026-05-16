@@ -860,13 +860,49 @@ async function deleteCourier(id) {
 }
 
 // ============================================
-// Customers
+// Customers (deduped client-side from orders)
 // ============================================
+function dedupedCustomers() {
+  const map = new Map();
+  // Primary source: orders (always accurate, every order is captured)
+  for (const o of _data.orders) {
+    if (!o.customer || !o.customer.whatsapp) continue;
+    if (o.status === "cancelled") continue;
+    const key = o.customer.whatsapp.replace(/[^0-9]/g, "");
+    if (!key) continue;
+    const ts = o.createdAt ? o.createdAt.seconds * 1000 : 0;
+    const ex = map.get(key);
+    if (ex) {
+      ex.orderCount += 1;
+      ex.lifetimeSpend += Number(o.total || 0);
+      if (ts > ex.lastTs) {
+        ex.lastTs = ts;
+        ex.name = o.customer.name || ex.name;
+        ex.city = o.customer.city || ex.city;
+        ex.address = o.customer.address || ex.address;
+      }
+    } else {
+      map.set(key, {
+        whatsapp: o.customer.whatsapp,
+        name:     o.customer.name || "",
+        city:     o.customer.city || "",
+        address:  o.customer.address || "",
+        orderCount: 1,
+        lifetimeSpend: Number(o.total || 0),
+        lastTs: ts
+      });
+    }
+  }
+  return Array.from(map.values())
+    .sort((a, b) => b.lifetimeSpend - a.lifetimeSpend);
+}
+
 function renderCustomers() {
-  return `${adminHead(t("customers"), _data.customers.length + "")}
+  const customers = dedupedCustomers();
+  return `${adminHead(t("customers"), customers.length + "")}
     <div class="table-wrap"><table>
       <thead><tr><th>${t("name")}</th><th>${t("whatsapp")}</th><th>${t("city")}</th><th>Orders</th><th>${t("lifetime_value")}</th><th></th></tr></thead>
-      <tbody>${_data.customers.map(c => `
+      <tbody>${customers.map(c => `
         <tr><td><strong>${esc(c.name||'—')}</strong>${(c.orderCount||0)>=3?` <span class="badge badge-gold">${t("vip")}</span>`:''}</td>
         <td>${esc(c.whatsapp||'')}</td><td>${cityLabel(c.city)}</td>
         <td>${c.orderCount||0}</td><td style="color:var(--gold);">${fmtPrice(c.lifetimeSpend||0)}</td>
