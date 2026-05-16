@@ -4,6 +4,7 @@
 // ============================================
 
 let _products = [];
+let _activeCategory = "all";
 let _cart = JSON.parse(localStorage.getItem("amal_cart") || "[]");
 let _checkoutStep = 0;
 let _checkoutData = {};
@@ -100,12 +101,13 @@ function renderHeader() {
           <a class="nav-link" href="#contact" onclick="scrollToId('contact',event)">${t("nav_contact")}</a>
         </nav>
         <a href="#top" onclick="scrollToTop(event)" class="brand-link" aria-label="${t("brand")}">
-          <img class="logo-img" src="assets/img/logo-wordmark.svg" alt="${t("brand")}" />
+          <img class="logo-img logo-img--header" src="assets/img/logo-wordmark.svg" alt="${t("brand")}" />
         </a>
         <div class="header-actions">
           <button class="lang-toggle" onclick="toggleLang()" aria-label="toggle language">${getLang() === "en" ? "العربية" : "English"}</button>
-          <button class="cart-btn" onclick="openCart()" aria-label="cart">
+          <button class="cart-btn" onclick="openCart()" aria-label="${t("cart_label")}">
             ${ICONS.cart}
+            <span class="cart-label">${t("cart_label")}</span>
             ${cartCount() ? `<span class="cart-badge">${cartCount()}</span>` : ""}
           </button>
           <button class="mobile-menu-btn" onclick="toggleMobileNav()" aria-label="menu">
@@ -118,10 +120,14 @@ function renderHeader() {
 
 function renderHero() {
   const s = window.AmalSettings || {};
+  // If admin uploaded a banner image, show it on top
+  const bannerHTML = s.bannerURL
+    ? `<img class="hero-banner-image" src="${s.bannerURL}" alt="${esc(t("brand"))}">`
+    : "";
   return `
     <section class="hero hero-compact" id="top">
+      ${bannerHTML}
       <div class="hero-inner">
-        <div class="hero-eyebrow">${esc(s.collectionTag || t("hero_eyebrow"))}</div>
         <h1>${t("hero_title_1")} <em>${t("hero_title_2")}</em> ${t("hero_title_3")}</h1>
         <p>${t("hero_sub")}</p>
         <div class="hero-cta">
@@ -196,15 +202,27 @@ function renderTypes() {
 }
 
 function renderCollection(s) {
+  const cats = [
+    { id: "all",       label: t("all_categories") },
+    { id: "practical", label: t("cat_practical") },
+    { id: "occasion",  label: t("cat_occasion") },
+    { id: "black",     label: t("cat_black") },
+    { id: "open",      label: t("cat_open") }
+  ];
+  const visible = _activeCategory === "all"
+    ? _products
+    : _products.filter(p => (p.category || "") === _activeCategory);
   return `
     <section class="section" id="collection">
       <div class="section-head">
-        <div class="section-eyebrow">${esc(s.collectionTag || "SS 2026")}</div>
         <h2 class="section-title">${t("our_collection")}</h2>
         <p class="section-sub">${t("collection_sub")}</p>
       </div>
+      <div class="cat-filter" id="catFilter">
+        ${cats.map(c => `<button class="cat-pill ${_activeCategory===c.id?'active':''}" onclick="setCategory('${c.id}')">${esc(c.label)}</button>`).join("")}
+      </div>
       <div class="product-grid" id="productGrid">
-        ${_products.length ? _products.map(productCard).join("") :
+        ${visible.length ? visible.map(productCard).join("") :
           `<div class="empty" style="grid-column: 1/-1;">
              <div class="empty-icon">✦</div>
              <div>${t("no_data")}</div>
@@ -212,6 +230,13 @@ function renderCollection(s) {
       </div>
     </section>`;
 }
+
+function setCategory(id) {
+  _activeCategory = id;
+  renderStorefront();
+  setTimeout(() => { const el = document.getElementById("collection"); if (el) el.scrollIntoView({ behavior: "smooth" }); }, 30);
+}
+window.setCategory = setCategory;
 
 function renderHeritage() {
   return `
@@ -572,23 +597,48 @@ function productCard(p) {
   const lang = getLang();
   const name = (lang === "ar" ? p.nameAr : p.nameEn) || p.nameEn || p.nameAr || "—";
   const desc = (lang === "ar" ? p.descAr : p.descEn) || "";
-  const stock = Number(p.stock) || 0;
+  // Total stock = sum of variants if present, else fallback to legacy stock field
+  const variants = Array.isArray(p.variants) ? p.variants : [];
+  const stock = variants.length
+    ? variants.reduce((n, v) => n + (Number(v.stock) || 0), 0)
+    : (Number(p.stock) || 0);
   const lowAt = Number(p.lowThreshold) || 3;
   let stockLabel, stockClass = "";
   if (stock <= 0)         { stockLabel = t("out_of_stock"); stockClass = "out"; }
   else if (stock <= lowAt){ stockLabel = t("low_stock", { n: stock }); stockClass = "low"; }
   else                    { stockLabel = t("in_stock"); }
 
+  // Discount handling: discount can be {type: "percent"|"amount", value: N}
+  const d = p.discount || null;
+  const orig = Number(p.price) || 0;
+  let sale = orig;
+  if (d && d.value > 0) {
+    sale = (d.type === "percent")
+      ? Math.max(0, orig * (1 - d.value / 100))
+      : Math.max(0, orig - Number(d.value));
+  }
+  const hasDiscount = sale < orig;
+  const priceHTML = hasDiscount
+    ? `<span class="price-original">${fmtPrice(orig)}</span><span class="price-sale">${fmtPrice(sale)}</span>`
+    : fmtPrice(orig);
+  const badgeLabel = d?.type === "percent"
+    ? `-${d.value}%`
+    : (hasDiscount ? `-${fmtPrice(orig - sale)}` : "");
+
+  // Pick the first image: prefer images[0] (multi-image), else imageURL (legacy)
+  const firstImg = (Array.isArray(p.images) && p.images[0]?.url) || p.imageURL || null;
+
   return `
     <article class="product-card" onclick="openProduct('${p.id}')">
-      <div class="product-img">
-        ${p.imageURL ? `<img src="${p.imageURL}" alt="${esc(name)}">` : ICONS.abayaSilhouette}
+      <div class="product-img" style="position:relative;">
+        ${hasDiscount ? `<div class="discount-badge">${esc(badgeLabel)}</div>` : ""}
+        ${firstImg ? `<img src="${firstImg}" alt="${esc(name)}">` : ICONS.abayaSilhouette}
       </div>
       <div class="product-info">
         <h3 class="product-name">${esc(name)}</h3>
         <div class="product-desc">${esc(desc)}</div>
         <div class="product-meta">
-          <div class="product-price">${fmtPrice(p.price)}</div>
+          <div class="product-price">${priceHTML}</div>
           <div class="product-stock ${stockClass}">${stockLabel}</div>
         </div>
       </div>

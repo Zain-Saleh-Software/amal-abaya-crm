@@ -6,29 +6,29 @@
    ============================================================ */
 
 :root {
-  /* base — pure black palette */
-  --bg:           #000000;
-  --bg-2:         #050505;
-  --surface:      #0a0a0a;
-  --surface-2:    #111111;
-  --surface-3:    #060606;
-  --hairline:     rgba(255,255,255,0.08);
-  --hairline-2:   rgba(255,255,255,0.04);
-  --border:       rgba(255,255,255,0.14);
-  --border-soft:  rgba(255,255,255,0.06);
+  /* base — inverted: pure-white site with editorial B&W accents */
+  --bg:           #ffffff;
+  --bg-2:         #fafafa;
+  --surface:      #ffffff;
+  --surface-2:    #f5f5f5;
+  --surface-3:    #fafafa;
+  --hairline:     rgba(0,0,0,0.08);
+  --hairline-2:   rgba(0,0,0,0.04);
+  --border:       rgba(0,0,0,0.14);
+  --border-soft:  rgba(0,0,0,0.06);
 
-  /* white as the only accent (replaces "gold") */
-  --gold-100:     #ffffff;
-  --gold:         #ffffff;
-  --gold-600:     #e6e6e6;
-  --gold-deep:    #888888;
-  --gold-shadow:  rgba(255,255,255,0.10);
+  /* black as the only accent (replaces "gold") */
+  --gold-100:     #000000;
+  --gold:         #000000;
+  --gold-600:     #1a1a1a;
+  --gold-deep:    #555555;
+  --gold-shadow:  rgba(0,0,0,0.10);
 
   /* text */
-  --text:         #ffffff;
-  --text-2:       #e5e5e5;
-  --text-dim:     #a3a3a3;
-  --text-mute:    #6b6b6b;
+  --text:         #000000;
+  --text-2:       #1a1a1a;
+  --text-dim:     #555555;
+  --text-mute:    #888888;
 
   /* accents — kept neutral / muted */
   --success:      #e5e5e5;
@@ -43,8 +43,8 @@
   --maxw:         1400px;
 
   /* shadows */
-  --sh-1:         0 1px 0 rgba(255,255,255,0.03) inset, 0 24px 60px rgba(0,0,0,0.55);
-  --sh-gold:      0 0 0 1px rgba(255,255,255,0.92) inset;
+  --sh-1:         0 1px 0 rgba(0,0,0,0.03) inset, 0 24px 60px rgba(0,0,0,0.08);
+  --sh-gold:      0 0 0 1px rgba(0,0,0,0.92) inset;
 
   /* typography */
   --ff-display:   "Playfair Display", "Cormorant Garamond", "Markazi Text", Georgia, serif;
@@ -1968,3 +1968,176 @@ textarea { resize: vertical; min-height: 80px; }
   .logo-img { height: 30px; }
   .hero.hero-compact { padding: 56px 20px 44px; }
 }
+
+
+/* ===========================================================
+   UAE rebrand additions — placed at end so they win cascade.
+   =========================================================== */
+
+/* Site is pure white. A few sections want to stay BLACK as
+   dramatic editorial inversions (hero banner area, CTA strip,
+   footer). We mark those with .invert. */
+.invert,
+.cta-strip,
+.store-footer,
+.hero.hero-dark {
+  background: #000 !important;
+  color: #fff !important;
+}
+.invert .nav-link,
+.invert a,
+.cta-strip a,
+.store-footer a { color: #fff; }
+
+/* Body background hard-pinned to white for safety */
+body { background: #fff !important; color: #000 !important; }
+
+/* Storefront header — clean, more space for logo */
+.store-header {
+  background: #fff;
+  border-bottom: 1px solid var(--hairline);
+}
+.logo-img { color: #000; }
+.logo-img--header {
+  height: 56px;
+  width: auto;
+  max-width: 220px;
+}
+@media (max-width: 680px) {
+  .logo-img--header { height: 44px; }
+}
+
+/* Cart button + label */
+.cart-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #000;
+}
+.cart-btn .cart-label {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+[dir="rtl"] .cart-btn .cart-label {
+  font-family: var(--ff-body);
+  font-size: 14px;
+}
+@media (max-width: 680px) {
+  .cart-btn .cart-label { display: none; }
+}
+
+/* Category filter pills (used on storefront collection) */
+.cat-filter {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 auto 22px;
+  padding: 0 16px;
+}
+.cat-pill {
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-family: var(--ff-body);
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.cat-pill:hover { background: #000; color: #fff; }
+.cat-pill.active { background: #000; color: #fff; }
+
+/* Discount badge on product card */
+.discount-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #000;
+  color: #fff;
+  font-family: var(--ff-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+[dir="rtl"] .discount-badge { left: auto; right: 12px; }
+.price-original {
+  text-decoration: line-through;
+  color: var(--text-mute);
+  margin-inline-end: 8px;
+  font-weight: 400;
+}
+.price-sale {
+  color: #000;
+  font-weight: 700;
+}
+
+/* Banner image slot */
+.hero-banner-image {
+  display: block;
+  width: 100%;
+  max-height: 720px;
+  object-fit: cover;
+}
+
+/* Admin dashboard — also white */
+.admin-shell, .admin-body, .admin-main { background: #fff !important; color: #000 !important; }
+.admin-sidebar { background: #fff !important; border-inline-end: 1px solid var(--hairline); }
+.admin-sidebar .nav-item, .admin-sidebar a { color: #000 !important; }
+.admin-sidebar .nav-item.active { background: #000 !important; color: #fff !important; }
+.card { background: #fff !important; border: 1px solid var(--hairline); color: #000 !important; }
+.card h3, .card label, .card input, .card textarea, .card select { color: #000 !important; }
+.card input, .card textarea, .card select {
+  background: #fff !important; border: 1px solid var(--border) !important;
+}
+.btn { color: #000; border-color: #000; }
+.btn-primary { background: #000 !important; color: #fff !important; border-color: #000 !important; }
+.btn-primary:hover { background: #1a1a1a !important; }
+
+/* Settings form: bank-account row + city row */
+.bank-row, .city-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+.city-row { grid-template-columns: 1fr 1fr auto; }
+.bank-row .btn-remove, .city-row .btn-remove {
+  background: #fff; color: #000; border: 1px solid #000;
+  padding: 8px 14px; border-radius: 2px; cursor: pointer; font-size: 12px;
+}
+.bank-row .btn-remove:hover, .city-row .btn-remove:hover { background: #000; color: #fff; }
+
+/* Variant stock matrix in admin product form */
+.variant-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.variant-grid input { padding: 8px; border: 1px solid var(--border); border-radius: 2px; }
+
+/* Color-tagged image upload card */
+.image-card {
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 8px;
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+.image-card img { width: 80px; height: 80px; object-fit: cover; border-radius: 2px; }

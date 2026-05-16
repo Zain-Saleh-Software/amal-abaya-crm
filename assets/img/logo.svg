@@ -1,13 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 340" role="img" aria-label="Amal — Abaya and more">
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 720" fill="none" preserveAspectRatio="xMidYMid meet">
   <style>
-    .amal { font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif; font-style: italic; font-weight: 600; fill: #ffffff; }
-    .tag  { font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif; font-style: normal; font-weight: 400; fill: #ffffff; letter-spacing: 0.04em; }
-    .cmark{ font-family: "Inter", system-ui, sans-serif; font-size: 14px; fill: #ffffff; }
+    .amal-word  { font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; font-weight: 900; font-size: 360px; letter-spacing: -10px; }
+    .amal-sub   { font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; font-weight: 400; font-size: 92px; letter-spacing: 2px; }
+    .amal-cmark { font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; font-weight: 400; font-size: 38px; }
   </style>
-  <!-- © mark above the A -->
-  <text class="cmark" x="118" y="110" text-anchor="middle">©</text>
-  <!-- "Amal" wordmark -->
-  <text class="amal" x="240" y="200" text-anchor="middle" font-size="180">Amal</text>
-  <!-- "Abaya and more" tagline -->
-  <text class="tag" x="240" y="280" text-anchor="middle" font-size="48">Abaya and more</text>
+  <rect width="1000" height="720" fill="#000"/>
+  <text x="500" y="395" class="amal-word"  fill="#fff" text-anchor="middle">Amal</text>
+  <text x="500" y="555" class="amal-sub"   fill="#fff" text-anchor="middle">Abaya and more</text>
+  <text x="328" y="195" class="amal-cmark" fill="#fff">©</text>
 </svg>

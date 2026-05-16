@@ -7,23 +7,23 @@ const TRANSLATIONS = {
     brand: "AMAL ABAYAS",
     tagline: "Abaya and more",
     hero_tag: "SS 2026 COLLECTION",
-    hero_eyebrow: "EST. PALESTINE",
-    hero_title_1: "Timeless",
-    hero_title_2: "elegance,",
-    hero_title_3: "crafted in Palestine",
-    hero_sub: "Modern abayas and modest wear, hand-sewn for the woman who carries her heritage with quiet confidence.",
+    hero_eyebrow: "AMAL ABAYAS",
+    hero_title_1: "Abayas",
+    hero_title_2: "and more,",
+    hero_title_3: "found at Amal Abayas",
+    hero_sub: "Abayas designed and selected with care from the UAE.",
     shop_now: "Shop the Collection",
     explore_story: "Our Story",
     scroll_explore: "Scroll to Explore",
     our_collection: "Our Collection",
-    collection_sub: "Hand-picked pieces, ready to ship across Palestine and beyond.",
+    collection_sub: "Hand-picked pieces, ready to ship across Gaza.",
     view_product: "Quick View",
     view_all: "View All",
     admin_login: "Admin",
 
     // Announcement bar
     ann_1: "Free shipping on orders over ₪500",
-    ann_2: "Hand-sewn in Palestine",
+    ann_2: "Sourced from the UAE",
     ann_3: "30-day exchange",
     ann_4: "Bilingual support — EN / AR",
 
@@ -90,12 +90,12 @@ const TRANSLATIONS = {
     // Section: heritage
     heritage_eyebrow: "Our Heritage",
     heritage_quote: "Every thread we sew carries a small piece of a place — its olive trees, its slow afternoons, its women who have always known what dignity looks like.",
-    heritage_attr: "— AMAL ABAYA Atelier, Palestine",
+    heritage_attr: "— AMAL ABAYAS",
 
     // Section: stats
     stat_pieces: "Pieces Hand-Sewn",
     stat_years: "Years of Tradition",
-    stat_cities: "Cities Across Palestine",
+    stat_cities: "Cities Served",
     stat_happy: "Happy Customers",
 
     // Section: care
@@ -114,7 +114,7 @@ const TRANSLATIONS = {
     // Section: testimonials
     testimonials_eyebrow: "Customer Voices",
     testimonials_title: "What our community says.",
-    testimonials_sub: "Words from women across Palestine, Jordan, the Gulf, and the diaspora — wearing AMAL ABAYA every day.",
+    testimonials_sub: "Words from women across Gaza wearing AMAL ABAYAS every day.",
     t1_quote: "I have ordered three abayas now. The cut is what makes them — they fall in a way no off-the-rack piece ever has. Worth every shekel.",
     t1_name: "Layla H.",
     t1_meta: "Ramallah, returning customer",
@@ -132,13 +132,13 @@ const TRANSLATIONS = {
     faq_q1: "How do I choose the right size?",
     faq_a1: "Our abayas run generously cut by design — modest doesn't mean tight. Most customers wear their usual size or one smaller for a flowing fit. If you're between sizes, message us your height and we'll recommend the right length.",
     faq_q2: "How long does shipping take?",
-    faq_a2: "We ship across Palestine within 2–4 business days, and to Jordan, the Gulf, and Europe within 5–10 business days. Each order is hand-packed and includes a tracking number.",
+    faq_a2: "We ship across the Gaza Strip within 2–4 business days. Each order is hand-packed and includes a tracking number.",
     faq_q3: "Are pieces made to order?",
     faq_a3: "Ready-to-ship pieces are sewn in advance in limited runs. Custom orders — different lengths, custom embroidery, alternative colors — take 7–14 days. Message us before ordering for custom work.",
     faq_q4: "What is your return policy?",
     faq_a4: "We accept exchanges within 14 days for unworn pieces in original packaging. Made-to-order and altered pieces are final sale. Shipping costs for exchanges are covered by the customer.",
     faq_q5: "Can I pay on delivery?",
-    faq_a5: "Inside Palestine, yes — cash on delivery is available in major cities. International orders require bank transfer or card payment in advance.",
+    faq_a5: "Yes — cash on delivery is available across Gaza. Bank transfer is also accepted.",
     faq_q6: "Do you offer wholesale or bulk orders?",
     faq_a6: "Yes — for bridal parties, boutiques, and corporate gifts, we offer pricing for orders of 8 or more pieces. Email us at the address below for a wholesale catalogue.",
 
@@ -175,7 +175,7 @@ const TRANSLATIONS = {
 
     // Footer
     footer_about: "AMAL ABAYAS",
-    footer_about_desc: "Hand-sewn abayas and modest wear, made with care in Palestine. Abaya and more.",
+    footer_about_desc: "Abayas designed and selected with care from the UAE. Abaya and more.",
     footer_shop: "Shop",
     footer_help: "Help",
     footer_company: "Company",
@@ -191,7 +191,7 @@ const TRANSLATIONS = {
     footer_link_journal: "Journal",
     footer_link_wholesale: "Wholesale",
     footer_link_privacy: "Privacy",
-    footer_made: "Made with care in Palestine",
+    footer_made: "Selected with care from the UAE",
     footer_rights: "All Rights Reserved",
 
     // Product / cart
@@ -333,17 +333,43 @@ const TRANSLATIONS = {
     print_invoice: "Print Invoice",
     invoice: "INVOICE",
     notes_optional: "Notes",
+    // ── NEW (UAE rebrand) ──
+    cart_label:          "Shopping Cart",
+    cat_practical:       "Practical",
+    cat_occasion:        "Occasion",
+    cat_black:           "Black",
+    cat_open:            "Open",
+    all_categories:      "All",
+    phone:               "Phone",
+    phone_label:         "Phone Number",
+    discount:            "Discount",
+    discount_amount:     "Discount Amount",
+    original_price:      "Original Price",
+    sale_price:          "Sale Price",
+    add_bank_account:    "Add bank account",
+    remove:              "Remove",
+    account_number:      "Account Number",
+    add_city:            "Add city",
+    city_name_en:        "City name (EN)",
+    city_name_ar:        "City name (AR)",
+    banner_image:        "Banner image (1920×720 recommended)",
+    upload_banner:       "Upload banner",
+    remove_banner:       "Remove banner",
+    color:               "Color",
+    size:                "Size",
+    stock_for_variant:   "Stock for this color × size",
+    add_variant:         "Add color / size variant",
   },
 
   ar: {
     brand: "عبايات أمل",
     tagline: "عبايات وأكثر",
     hero_tag: "مجموعة ربيع/صيف ٢٠٢٦",
-    hero_eyebrow: "تأسست في فلسطين",
-    hero_title_1: "أناقة",
-    hero_title_2: "خالدة،",
-    hero_title_3: "صُنعت في فلسطين",
-    hero_sub: "عبايات وملابس محتشمة عصرية، مخيطة يدوياً للمرأة التي تحمل تراثها بثقة هادئة.",
+    hero_eyebrow: "عبايات أمل",
+    hero_title_1: "عبايات",
+    hero_title_2: "وأكثر،",
+    hero_title_3: "تجدينها لدى عبايات أمل",
+    hero_sub: "عبايات صُمّمت واختيرت بعناية من الإمارات.",
     shop_now: "تسوّقي المجموعة",
     explore_story: "قصتنا",
     scroll_explore: "اكتشفي المزيد",
@@ -365,7 +391,7 @@ const TRANSLATIONS = {
     about_title_em: "قصة ترتدينها.",
     about_lead: "العباية هي أحد أكثر رموز الأناقة العربية رسوخاً عبر الزمن — رداء فضفاض ترتديه النساء في المنطقة منذ قرون.",
     about_p1: "بدأت كغطاء بسيط ومحتشم، ثم تطورت عبر الأجيال لتصبح لوحة فنية معبرة. من أنهار بلاد الشام إلى أسواق الخليج، شكّلت كل منطقة العباية على صورتها — بالتطريز والقصّات والأقمشة والصور الظلية التي تنطق بهدوء بأصل المرأة وهويتها.",
-    about_p2: "في أمل عباية، نعمل وفق التقليد الفلسطيني: خطوط طويلة وانسيابية، زخرفة مدروسة، وعناية فائقة بحركة القماش. تُخاط كل قطعة في ورشتنا الصغيرة، معظمها يدوياً، وكلها بحب.",
+    about_p2: "في عبايات أمل، نعمل وفق التقليد الفلسطيني: خطوط طويلة وانسيابية، زخرفة مدروسة، وعناية فائقة بحركة القماش. تُخاط كل قطعة في ورشتنا الصغيرة، معظمها يدوياً، وكلها بحب.",
     about_p3: "نؤمن أن الاحتشام لا يعني الاختفاء. عباياتنا مصممة لتُلاحظ للأسباب الصحيحة: تفصيل الكمّ، انسدال الذيل، وانعكاس الضوء على غُرزة واحدة عند الأسورة.",
 
     // Types
@@ -422,7 +448,7 @@ const TRANSLATIONS = {
     // Heritage
     heritage_eyebrow: "تراثنا",
     heritage_quote: "كل خيط نخيطه يحمل قطعة صغيرة من مكان — من أشجار زيتونه، من أصائله البطيئة، من نسائه اللواتي عرفن دائماً معنى الكرامة.",
-    heritage_attr: "— ورشة أمل عباية، فلسطين",
+    heritage_attr: "— عبايات أمل",
 
     // Stats
     stat_pieces: "قطعة مخيطة يدوياً",
@@ -446,7 +472,7 @@ const TRANSLATIONS = {
     // Testimonials
     testimonials_eyebrow: "أصوات العميلات",
     testimonials_title: "ماذا يقول مجتمعنا.",
-    testimonials_sub: "كلمات من نساء في فلسطين والأردن والخليج والمهجر — يرتدين أمل عباية كل يوم.",
+    testimonials_sub: "كلمات من نساء في فلسطين والأردن والخليج والمهجر — يرتدين عبايات أمل كل يوم.",
     t1_quote: "طلبت ثلاث عبايات حتى الآن. القَصّة هي ما يميزها — تنسدل بطريقة لم تنسدل بها أي قطعة جاهزة. تستحق كل شيكل.",
     t1_name: "ليلى ح.",
     t1_meta: "رام الله، عميلة دائمة",
@@ -657,26 +683,53 @@ const TRANSLATIONS = {
     print_invoice: "طباعة الفاتورة",
     invoice: "فاتورة",
     notes_optional: "ملاحظات",
+    // ── NEW (UAE rebrand) ──
+    cart_label:          "عربة التسوق",
+    cat_practical:       "عبايات عملية",
+    cat_occasion:        "عبايات مناسبات",
+    cat_black:           "عبايات سوداء",
+    cat_open:            "عبايات مفتوحة",
+    all_categories:      "الكل",
+    phone:               "هاتف",
+    phone_label:         "رقم الهاتف",
+    discount:            "الخصم",
+    discount_amount:     "قيمة الخصم",
+    original_price:      "السعر الأصلي",
+    sale_price:          "سعر البيع",
+    add_bank_account:    "إضافة حساب بنكي",
+    remove:              "حذف",
+    account_number:      "رقم الحساب",
+    add_city:            "إضافة مدينة",
+    city_name_en:        "اسم المدينة (إنجليزي)",
+    city_name_ar:        "اسم المدينة (عربي)",
+    banner_image:        "صورة البانر (المقاس الموصى به ١٩٢٠×٧٢٠)",
+    upload_banner:       "رفع صورة البانر",
+    remove_banner:       "حذف البانر",
+    color:               "اللون",
+    size:                "المقاس",
+    stock_for_variant:   "المخزون لهذا اللون والمقاس",
+    add_variant:         "إضافة لون / مقاس",
+
   }
 };
 
-const PALESTINIAN_CITIES = [
-  { en: "Gaza",          ar: "غزة" },
-  { en: "Ramallah",      ar: "رام الله" },
-  { en: "Hebron",        ar: "الخليل" },
-  { en: "Nablus",        ar: "نابلس" },
-  { en: "Bethlehem",     ar: "بيت لحم" },
-  { en: "Jenin",         ar: "جنين" },
-  { en: "Tulkarm",       ar: "طولكرم" },
-  { en: "Qalqilya",      ar: "قلقيلية" },
-  { en: "Jericho",       ar: "أريحا" },
-  { en: "Salfit",        ar: "سلفيت" },
-  { en: "Tubas",         ar: "طوباس" },
-  { en: "Rafah",         ar: "رفح" },
-  { en: "Khan Yunis",    ar: "خان يونس" },
-  { en: "Deir al-Balah", ar: "دير البلح" },
-  { en: "Jerusalem",     ar: "القدس" }
+const DEFAULT_CITIES = [
+  { en: "Gaza",        ar: "غزة" },
+  { en: "North Gaza",  ar: "الشمال" },
+  { en: "Middle Area", ar: "الوسطى" },
+  { en: "Khan Yunis",  ar: "خان يونس" },
+  { en: "Rafah",       ar: "رفح" }
 ];
+
+// Cities list is loaded from settings.cities if present, otherwise defaults to DEFAULT_CITIES.
+function getCities() {
+  const s = (window.AmalSettings && Array.isArray(window.AmalSettings.cities) && window.AmalSettings.cities.length)
+    ? window.AmalSettings.cities
+    : DEFAULT_CITIES;
+  return s;
+}
+// Backward-compat alias so existing code referencing PALESTINIAN_CITIES keeps working.
+const PALESTINIAN_CITIES = DEFAULT_CITIES;
 
 let CURRENT_LANG = localStorage.getItem("amal_lang") || "en";
 
@@ -713,7 +766,8 @@ function fmtDate(iso) {
 }
 
 function cityLabel(cityKey) {
-  const c = PALESTINIAN_CITIES.find(x => x.en === cityKey || x.ar === cityKey);
+  const list = (typeof getCities === "function") ? getCities() : PALESTINIAN_CITIES;
+  const c = list.find(x => x.en === cityKey || x.ar === cityKey);
   if (!c) return cityKey || "—";
   return CURRENT_LANG === "ar" ? c.ar : c.en;
 }
@@ -726,3 +780,5 @@ window.fmtPrice = fmtPrice;
 window.fmtDate = fmtDate;
 window.cityLabel = cityLabel;
 window.PALESTINIAN_CITIES = PALESTINIAN_CITIES;
+window.DEFAULT_CITIES = DEFAULT_CITIES;
+window.getCities = getCities;
