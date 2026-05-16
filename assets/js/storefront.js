@@ -1,604 +1,790 @@
 // ============================================
-// AMAL ABAYA — Customer-facing storefront
+// عبايات أمل — Storefront (luxury B&G)
 // ============================================
 
 let _products = [];
+let _activeCategory = "all";
 let _cart = JSON.parse(localStorage.getItem("amal_cart") || "[]");
-let _checkoutStep = 0;
-let _checkoutData = {};
-let _paymentProofFile = null;
-let _paymentProofPreview = null;
+let _cartOpen = false;
+let _mobileNavOpen = false;
 
-function saveCart() { localStorage.setItem("amal_cart", JSON.stringify(_cart)); }
-function cartCount() { return _cart.reduce((n, it) => n + it.quantity, 0); }
-function cartSubtotal() { return _cart.reduce((s, it) => s + it.price * it.quantity, 0); }
+// ── ICONS ──────────────────────────────────────────────────
+const ICONS = {
+  cart:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="20" height="20"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`,
+  menu:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`,
+  close:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  bag:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><path d="M5 8h14l-1 13H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>`,
+  phone:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
+  wa:     `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 3.5A11 11 0 0 0 3.6 17.3L2 22l4.8-1.6A11 11 0 1 0 20.5 3.5zM12 20a8.4 8.4 0 0 1-4.3-1.2l-.3-.2-2.9 1 1-2.8-.2-.3A8.4 8.4 0 1 1 12 20zm4.6-6.2c-.3-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.1-.6 0a6.9 6.9 0 0 1-2-1.2 7.6 7.6 0 0 1-1.4-1.7c-.1-.3 0-.4.1-.5l.4-.5.2-.3a.6.6 0 0 0 0-.5l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5a1.1 1.1 0 0 0-.8.4 3.3 3.3 0 0 0-1 2.4 5.7 5.7 0 0 0 1.2 3 13 13 0 0 0 5 4.4c.7.3 1.2.5 1.6.6a3.9 3.9 0 0 0 1.7 0 2.7 2.7 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .1-1.3c-.1-.1-.3-.2-.6-.3z"/></svg>`,
+  ig:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>`,
+  pin:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+  truck:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="3" width="15" height="13"/><polygon points="16,8 20,8 23,11 23,16 16,16"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`,
+  shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`,
+  chat:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  hanger: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 8a2 2 0 1 1 2-2"/><path d="M12 8v3"/><path d="M3 18L12 11l9 7"/><path d="M2 18h20"/></svg>`,
+  sparkle:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2v6"/><path d="M12 16v6"/><path d="M2 12h6"/><path d="M16 12h6"/><path d="M5 5l4 4"/><path d="M15 15l4 4"/><path d="M19 5l-4 4"/><path d="M9 15l-4 4"/></svg>`,
+  diamond:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M11 3 8 9l4 12 4-12-3-6"/><path d="M2 9h20"/></svg>`,
+  silhouette: `<svg viewBox="0 0 100 160" fill="none" stroke="currentColor" stroke-width="1"><path d="M50 8C42 8 36 14 36 22c0 4 2 7 5 9L24 50 14 90 8 140h84l-6-50-10-40-17-19c3-2 5-5 5-9 0-8-6-14-14-14z"/><path d="M36 31 50 90l14-59" stroke-dasharray="2,2" opacity=".5"/></svg>`,
+};
 
+// ── ENTRY ──────────────────────────────────────────────────
 async function loadStorefront() {
-  showLoading(true);
   try {
     _products = await Amal.fetchAll("products", { orderBy: ["createdAt", "desc"] });
     window.AmalSettings = await Amal.getSettings();
   } catch (e) {
-    showToast("Could not load products: " + e.message, "error");
+    console.warn("Load failed:", e);
     _products = [];
+    window.AmalSettings = window.AmalSettings || {};
   }
-  showLoading(false);
+  document.body.classList.remove("theme-pearl");
+  document.body.classList.add("theme-luxury");
   renderStorefront();
+  // Add overlay containers (rendered once, contents toggled)
+  if (!document.getElementById("cart-root")) {
+    const root = document.createElement("div");
+    root.id = "cart-root";
+    document.body.appendChild(root);
+  }
+  if (!document.getElementById("modal-root")) {
+    const root = document.createElement("div");
+    root.id = "modal-root";
+    document.body.appendChild(root);
+  }
+  if (!document.getElementById("toast-root")) {
+    const root = document.createElement("div");
+    root.id = "toast-root";
+    root.className = "toast-stack";
+    document.body.appendChild(root);
+  }
 }
 
+// ── HELPERS ────────────────────────────────────────────────
+function saveCart() { localStorage.setItem("amal_cart", JSON.stringify(_cart)); refreshCartUI(); }
+function cartCount() { return _cart.reduce((n, it) => n + it.quantity, 0); }
+function cartSubtotal() { return _cart.reduce((s, it) => s + it.price * it.quantity, 0); }
+
+function calcDiscountedPrice(p) {
+  const orig = Number(p.price) || 0;
+  const d = p.discount;
+  if (!d || !d.value) return { orig, sale: orig, hasDiscount: false, badge: "" };
+  const v = Number(d.value);
+  const sale = (d.type === "percent")
+    ? Math.max(0, orig * (1 - v / 100))
+    : Math.max(0, orig - v);
+  return {
+    orig, sale,
+    hasDiscount: sale < orig,
+    badge: d.type === "percent" ? `-${v}%` : `-${fmtPrice(orig - sale)}`
+  };
+}
+
+function totalStock(p) {
+  const variants = Array.isArray(p.variants) ? p.variants : [];
+  return variants.length
+    ? variants.reduce((n, v) => n + (Number(v.stock) || 0), 0)
+    : (Number(p.stock) || 0);
+}
+
+function variantStock(p, color, size) {
+  const variants = Array.isArray(p.variants) ? p.variants : [];
+  if (!variants.length) return Number(p.stock) || 0;
+  const v = variants.find(v => (!color || v.color === color) && (!size || v.size === size));
+  return v ? (Number(v.stock) || 0) : 0;
+}
+
+function firstImage(p) {
+  const arr = Array.isArray(p.images) ? p.images : [];
+  return arr[0]?.url || p.imageURL || null;
+}
+
+function imageForColor(p, color) {
+  const arr = Array.isArray(p.images) ? p.images : [];
+  const found = arr.find(x => x.color === color && x.url);
+  return found?.url || p.imageURL || arr[0]?.url || null;
+}
+
+function uniqueValues(arr, key) {
+  const set = new Set();
+  arr.forEach(x => { if (x[key]) set.add(x[key]); });
+  return [...set];
+}
+
+// ── RENDER ─────────────────────────────────────────────────
 function renderStorefront() {
   const app = document.getElementById("app");
   const s = window.AmalSettings || {};
   app.innerHTML = `
-    <header class="store-header">
+    ${renderPromo()}
+    ${renderHeader()}
+    ${renderHero()}
+    ${renderCategories()}
+    ${renderCollection(s)}
+    ${renderPromise()}
+    ${renderAbout()}
+    ${renderContact(s)}
+    ${renderFooter(s)}
+  `;
+  refreshCartUI();
+}
+window.renderCurrentView = renderStorefront;
+
+function renderPromo() {
+  return `<div class="promo-strip">${esc(t("promo"))}</div>`;
+}
+
+function renderHeader() {
+  const count = cartCount();
+  return `
+    <header class="store-header" id="top">
       <div class="store-header-inner">
-        <div class="brand">${t("brand")}</div>
-        <div class="header-actions">
-          <button class="lang-toggle" onclick="toggleLang()">${getLang() === "en" ? "العربية" : "English"}</button>
-          <button class="cart-btn" onclick="openCart()" aria-label="cart">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-            ${cartCount() ? `<span class="cart-badge">${cartCount()}</span>` : ""}
+        <nav class="nav-left">
+          <a class="nav-link" href="#top" onclick="scrollToId('top',event)">${t("nav_home")}</a>
+          <a class="nav-link" href="#collection" onclick="scrollToId('collection',event)">${t("nav_collection")}</a>
+          <a class="nav-link" href="#cats" onclick="scrollToId('cats',event)">${t("nav_categories")}</a>
+          <a class="nav-link" href="#about" onclick="scrollToId('about',event)">${t("nav_about")}</a>
+          <a class="nav-link" href="#contact" onclick="scrollToId('contact',event)">${t("nav_contact")}</a>
+        </nav>
+        <a href="#top" class="brand-mark" onclick="scrollToId('top',event)">
+          ${t("brand")}
+          <span class="sub">${t("brand_sub")}</span>
+        </a>
+        <div class="nav-right">
+          <button class="lang-btn" onclick="toggleLang()">${getLang() === "ar" ? "EN" : "عربي"}</button>
+          <button class="icon-btn cart-btn" onclick="openCart()">
+            ${ICONS.cart}
+            <span class="label">${t("cart_label")}</span>
+            ${count ? `<span class="cart-badge">${count}</span>` : ""}
           </button>
+          <button class="mobile-menu-btn" onclick="openMobileNav()">${ICONS.menu}</button>
         </div>
       </div>
     </header>
+    <div class="mobile-nav" id="mobileNav">
+      <button class="close-btn" style="margin-bottom:18px;" onclick="closeMobileNav()">${ICONS.close}</button>
+      <a href="#top" onclick="scrollToId('top',event); closeMobileNav();">${t("nav_home")}</a>
+      <a href="#collection" onclick="scrollToId('collection',event); closeMobileNav();">${t("nav_collection")}</a>
+      <a href="#cats" onclick="scrollToId('cats',event); closeMobileNav();">${t("nav_categories")}</a>
+      <a href="#about" onclick="scrollToId('about',event); closeMobileNav();">${t("nav_about")}</a>
+      <a href="#contact" onclick="scrollToId('contact',event); closeMobileNav();">${t("nav_contact")}</a>
+    </div>
+  `;
+}
 
+function renderHero() {
+  const s = window.AmalSettings || {};
+  const bannerImg = s.bannerURL
+    ? `<img src="${s.bannerURL}" alt="${esc(t("brand"))}" style="max-width:100%;max-height:280px;border-radius:12px;margin-bottom:34px;">`
+    : "";
+  return `
     <section class="hero">
-      <div class="hero-eyebrow">${s.collectionTag || "NEW COLLECTION"}</div>
-      <h1>${t("hero_title")}</h1>
-      <p>${t("hero_sub")}</p>
-      <button class="btn btn-primary" onclick="document.getElementById('collection').scrollIntoView({behavior:'smooth'})">
-        ${t("shop_now")} <span class="arrow">→</span>
-      </button>
+      <div class="hero-inner">
+        ${bannerImg}
+        <div class="hero-eyebrow">${esc(t("hero_eyebrow"))}</div>
+        <h1>
+          ${esc(t("hero_title"))}
+          <span class="gold">${esc(t("hero_title_gold"))}</span>
+        </h1>
+        <p class="lead">${esc(t("hero_sub"))}</p>
+        <div class="hero-cta">
+          <button class="btn btn-primary btn-lg" onclick="scrollToId('collection')">
+            ${t("shop_now")}
+            <span class="arrow">${getLang()==='ar'?'←':'→'}</span>
+          </button>
+          <button class="btn btn-ghost btn-lg" onclick="scrollToId('contact')">${t("contact_us")}</button>
+        </div>
+      </div>
     </section>
+  `;
+}
 
+function renderCategories() {
+  const cats = [
+    { id: "practical", icon: ICONS.hanger,  k: "cat_practical" },
+    { id: "occasion",  icon: ICONS.sparkle, k: "cat_occasion" },
+    { id: "black",     icon: ICONS.diamond, k: "cat_black" },
+    { id: "open",      icon: ICONS.silhouette, k: "cat_open" },
+  ];
+  return `
+    <section class="section" id="cats">
+      <div class="section-head">
+        <div class="section-eyebrow">${t("cats_title")}</div>
+        <h2 class="section-title">${t("cats_sub")}</h2>
+      </div>
+      <div class="categories">
+        ${cats.map(c => `
+          <div class="cat-card" onclick="setCategory('${c.id}')">
+            <div class="icon">${c.icon}</div>
+            <h3>${t(c.k)}</h3>
+            <p>${t(c.k + "_sub")}</p>
+          </div>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderCollection(s) {
+  const visible = _activeCategory === "all"
+    ? _products
+    : _products.filter(p => (p.category || "") === _activeCategory);
+  const cats = ["all", "practical", "occasion", "black", "open"];
+  return `
     <section class="section" id="collection">
       <div class="section-head">
-        <div class="section-eyebrow">★ ${s.collectionTag || ""} ★</div>
-        <h2 class="section-title">${t("our_collection")}</h2>
-        <p class="section-sub">${t("collection_sub")}</p>
+        <div class="section-eyebrow">${t("collection_title")}</div>
+        <h2 class="section-title">${t("collection_sub")}</h2>
       </div>
-      <div class="product-grid" id="productGrid">
-        ${_products.length ? _products.map(productCard).join("") :
-          `<div class="empty" style="grid-column: 1/-1;">
-             <div class="empty-icon">✦</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:36px;">
+        ${cats.map(id => `<button class="opt-chip ${_activeCategory===id?'active':''}" onclick="setCategory('${id}')">${t(id==='all'?'cat_all':'cat_'+id)}</button>`).join("")}
+      </div>
+      <div class="product-grid">
+        ${visible.length ? visible.map(productCard).join("") :
+          `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-dim);">
+             <div style="font-size:48px;color:var(--gold-deep);margin-bottom:14px;">✦</div>
              <div>${t("no_data")}</div>
            </div>`}
       </div>
     </section>
-
-    <footer class="site-footer">
-      <div class="brand">${t("brand")}</div>
-      <div class="footer-meta">${s.instagram || ""} · MADE WITH CARE IN PALESTINE</div>
-      <button class="btn btn-outline btn-sm" onclick="openAdminLogin()">${t("admin_login")}</button>
-    </footer>
   `;
 }
 
 function productCard(p) {
   const lang = getLang();
-  const name = (lang === "ar" ? p.nameAr : p.nameEn) || p.nameEn || p.nameAr || "—";
+  const name = (lang === "ar" ? p.nameAr : p.nameEn) || p.nameAr || p.nameEn || "—";
   const desc = (lang === "ar" ? p.descAr : p.descEn) || "";
-  const stock = Number(p.stock) || 0;
+  const stock = totalStock(p);
   const lowAt = Number(p.lowThreshold) || 3;
   let stockLabel, stockClass = "";
-  if (stock <= 0)         { stockLabel = t("out_of_stock"); stockClass = "out"; }
-  else if (stock <= lowAt){ stockLabel = t("low_stock", { n: stock }); stockClass = "low"; }
-  else                    { stockLabel = t("in_stock"); }
+  if (stock <= 0)        { stockLabel = t("out_of_stock"); stockClass = "out"; }
+  else if (stock <= lowAt){ stockLabel = t("low_stock"); stockClass = "low"; }
+  else                   { stockLabel = t("in_stock"); }
+
+  const { sale, orig, hasDiscount, badge } = calcDiscountedPrice(p);
+  const img = firstImage(p);
+
+  const priceHTML = hasDiscount
+    ? `<span><span class="price-original">${fmtPrice(orig)}</span><span class="price">${fmtPrice(sale)}</span></span>`
+    : `<span class="price">${fmtPrice(orig)}</span>`;
 
   return `
     <article class="product-card" onclick="openProduct('${p.id}')">
-      <div class="product-img">
-        ${p.imageURL ? `<img src="${p.imageURL}" alt="${name}">` : "ع"}
+      <div class="img-wrap">
+        ${hasDiscount ? `<div class="discount-badge">${esc(badge)}</div>` : ""}
+        ${stock <= 0 ? `<div class="soldout-overlay">${t("out_of_stock")}</div>` : ""}
+        ${img ? `<img src="${img}" alt="${esc(name)}" loading="lazy">` : `<div class="placeholder">${ICONS.silhouette}</div>`}
       </div>
-      <div class="product-info">
-        <h3 class="product-name">${esc(name)}</h3>
-        <div class="product-desc">${esc(desc)}</div>
-        <div class="product-meta">
-          <div class="product-price">${fmtPrice(p.price)}</div>
-          <div class="product-stock ${stockClass}">${stockLabel}</div>
+      <div class="info">
+        <div class="name">${esc(name)}</div>
+        ${desc ? `<div class="desc">${esc(desc)}</div>` : ""}
+        <div class="meta">
+          ${priceHTML}
+          <span class="stock ${stockClass}">${stockLabel}</span>
         </div>
       </div>
-    </article>`;
+    </article>
+  `;
 }
 
+function renderPromise() {
+  const items = [
+    { icon: ICONS.truck,  t_t: "promise_ship_t", t_s: "promise_ship_s" },
+    { icon: ICONS.shield, t_t: "promise_qual_t", t_s: "promise_qual_s" },
+    { icon: ICONS.chat,   t_t: "promise_wa_t",   t_s: "promise_wa_s" },
+  ];
+  return `
+    <section class="section" style="padding-top:0;padding-bottom:0;">
+      <div class="promise">
+        ${items.map(i => `
+          <div class="promise-item">
+            <div class="icon">${i.icon}</div>
+            <h4>${t(i.t_t)}</h4>
+            <p>${t(i.t_s)}</p>
+          </div>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderAbout() {
+  return `
+    <section class="section" id="about">
+      <div class="about-split">
+        <div class="visual">${ICONS.silhouette}</div>
+        <div>
+          <div class="section-eyebrow">${t("about_eyebrow")}</div>
+          <h2 class="section-title" style="text-align:start;">${t("about_title")}</h2>
+          <p class="lead">${t("about_lead")}</p>
+          <p>${t("about_p1")}</p>
+          <p>${t("about_p2")}</p>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderContact(s) {
+  const wa = (s.whatsapp || "").replace(/[^0-9]/g, "");
+  const phone = s.phone || s.whatsapp || "";
+  const ig = s.instagram || "amal.abayas";
+  return `
+    <section class="section" id="contact">
+      <div class="section-head">
+        <div class="section-eyebrow">${t("contact_title")}</div>
+        <h2 class="section-title">${t("contact_sub")}</h2>
+      </div>
+      <div class="contact-grid">
+        <a href="tel:${phone}" class="contact-card">
+          <div class="icon">${ICONS.phone}</div>
+          <div class="label">${t("contact_phone")}</div>
+          <div class="val">${esc(phone || "—")}</div>
+        </a>
+        <a href="https://wa.me/${wa}" target="_blank" class="contact-card">
+          <div class="icon">${ICONS.wa}</div>
+          <div class="label">${t("contact_wa")}</div>
+          <div class="val">${esc(s.whatsapp || "—")}</div>
+        </a>
+        <a href="https://instagram.com/${ig}" target="_blank" class="contact-card">
+          <div class="icon">${ICONS.ig}</div>
+          <div class="label">${t("contact_ig")}</div>
+          <div class="val">@${esc(ig)}</div>
+        </a>
+        <div class="contact-card">
+          <div class="icon">${ICONS.pin}</div>
+          <div class="label">${t("contact_addr")}</div>
+          <div class="val ar">${esc(t("city"))}: غزة</div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderFooter(s) {
+  return `
+    <footer class="store-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <h4>${t("brand")}</h4>
+          <p>${t("footer_about")}</p>
+        </div>
+        <div class="footer-col">
+          <h5>${t("footer_quick")}</h5>
+          <a href="#collection" onclick="scrollToId('collection',event)">${t("nav_collection")}</a>
+          <a href="#cats" onclick="scrollToId('cats',event)">${t("nav_categories")}</a>
+          <a href="#about" onclick="scrollToId('about',event)">${t("nav_about")}</a>
+          <a href="#contact" onclick="scrollToId('contact',event)">${t("nav_contact")}</a>
+        </div>
+        <div class="footer-col">
+          <h5>${t("contact_info")||t("contact_title")}</h5>
+          <a href="tel:${esc(s.phone||s.whatsapp||'')}">${esc(s.phone||s.whatsapp||"—")}</a>
+          <a href="https://wa.me/${(s.whatsapp||'').replace(/[^0-9]/g,'')}" target="_blank">${t("contact_wa")}</a>
+          <a href="https://instagram.com/${esc(s.instagram||'amal.abayas')}" target="_blank">${t("contact_ig")}</a>
+          <a href="#admin">${t("logout")||"Admin"}</a>
+        </div>
+      </div>
+      <div class="footer-bottom">${t("footer_rights")}</div>
+    </footer>
+  `;
+}
+
+// ── Helpers ────────────────────────────────────────────────
+function scrollToId(id, ev) {
+  if (ev) ev.preventDefault();
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+window.scrollToId = scrollToId;
+
+function setCategory(id) {
+  _activeCategory = id;
+  renderStorefront();
+  setTimeout(() => scrollToId("collection"), 80);
+}
+window.setCategory = setCategory;
+
+function openMobileNav() { document.getElementById("mobileNav")?.classList.add("open"); }
+function closeMobileNav() { document.getElementById("mobileNav")?.classList.remove("open"); }
+window.openMobileNav = openMobileNav;
+window.closeMobileNav = closeMobileNav;
+
+// ── CART ───────────────────────────────────────────────────
+function openCart() {
+  _cartOpen = true;
+  refreshCartUI();
+}
+function closeCart() {
+  _cartOpen = false;
+  refreshCartUI();
+}
+window.openCart = openCart;
+window.closeCart = closeCart;
+
+function refreshCartUI() {
+  const root = document.getElementById("cart-root");
+  if (!root) return;
+  root.innerHTML = `
+    <div class="cart-backdrop ${_cartOpen?'open':''}" onclick="closeCart()"></div>
+    <aside class="cart-panel ${_cartOpen?'open':''}">
+      <div class="cart-head">
+        <h3>${t("cart_label")}</h3>
+        <button class="close-btn" onclick="closeCart()">${ICONS.close}</button>
+      </div>
+      <div class="cart-body">${renderCartBody()}</div>
+      ${_cart.length ? renderCartFoot() : ""}
+    </aside>
+  `;
+  // Update header badge if header is in DOM
+  const badge = document.querySelector(".cart-badge");
+  const count = cartCount();
+  if (badge) badge.textContent = count;
+  else if (count > 0) {
+    const cartBtn = document.querySelector(".cart-btn");
+    if (cartBtn) {
+      const b = document.createElement("span");
+      b.className = "cart-badge";
+      b.textContent = count;
+      cartBtn.appendChild(b);
+    }
+  }
+}
+
+function renderCartBody() {
+  if (!_cart.length) {
+    return `
+      <div class="cart-empty">
+        <div class="icon">${ICONS.bag}</div>
+        <h4 style="font-family:var(--ff-display-ar);font-size:20px;color:var(--text);margin-bottom:6px;">${t("cart_empty")}</h4>
+        <p>${t("cart_empty_sub")}</p>
+        <button class="btn btn-primary" style="margin-top:24px;" onclick="closeCart()">${t("continue_shopping")}</button>
+      </div>
+    `;
+  }
+  return _cart.map((it, i) => `
+    <div class="cart-item">
+      <img class="thumb" src="${it.image||''}" alt="${esc(it.name)}" onerror="this.style.display='none';">
+      <div class="info">
+        <div class="name">${esc(it.name)}</div>
+        <div class="opts">${esc(it.color||'')}${it.color&&it.size?' · ':''}${esc(it.size||'')}</div>
+        <div class="qty">
+          <button onclick="changeQty(${i},-1)">−</button>
+          <span>${it.quantity}</span>
+          <button onclick="changeQty(${i},1)">+</button>
+        </div>
+      </div>
+      <div class="right">
+        <div class="price">${fmtPrice(it.price * it.quantity)}</div>
+        <button class="rm" onclick="removeFromCart(${i})">${t("remove")}</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderCartFoot() {
+  const s = window.AmalSettings || {};
+  const sub = cartSubtotal();
+  const free = sub >= 200; // Free shipping threshold
+  const ship = free ? 0 : (Number(s.shippingFee) || 25);
+  return `
+    <div class="cart-foot">
+      <div class="totals">
+        <div class="row"><span>${t("subtotal")}</span><span>${fmtPrice(sub)}</span></div>
+        <div class="row"><span>${t("shipping")}</span><span>${free ? `<span style="color:var(--gold);font-weight:600;">${t("shipping_free")}</span>` : fmtPrice(ship)}</span></div>
+        <div class="row grand"><span>${t("total")}</span><span>${fmtPrice(sub + ship)}</span></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="openCheckout()">${t("checkout")}</button>
+    </div>
+  `;
+}
+
+function addToCart(item) {
+  const idx = _cart.findIndex(c =>
+    c.productId === item.productId &&
+    (c.color||'') === (item.color||'') &&
+    (c.size||'') === (item.size||''));
+  if (idx > -1) {
+    _cart[idx].quantity += item.quantity;
+  } else {
+    _cart.push(item);
+  }
+  saveCart();
+  showToast(t("added"), "success");
+}
+window.addToCart = addToCart;
+
+function changeQty(i, delta) {
+  if (!_cart[i]) return;
+  _cart[i].quantity = Math.max(1, _cart[i].quantity + delta);
+  saveCart();
+}
+window.changeQty = changeQty;
+
+function removeFromCart(i) {
+  _cart.splice(i, 1);
+  saveCart();
+}
+window.removeFromCart = removeFromCart;
+
+// ── PRODUCT DETAIL ─────────────────────────────────────────
 function openProduct(id) {
   const p = _products.find(x => x.id === id);
   if (!p) return;
   const lang = getLang();
-  const name = (lang === "ar" ? p.nameAr : p.nameEn) || p.nameEn || p.nameAr;
+  const name = (lang === "ar" ? p.nameAr : p.nameEn) || p.nameAr || p.nameEn || "—";
   const desc = (lang === "ar" ? p.descAr : p.descEn) || "";
-  const sizes = (p.sizes || "S,M,L,XL").split(",").map(s => s.trim()).filter(Boolean);
-  const colors = (p.colors || "Black").split(",").map(s => s.trim()).filter(Boolean);
-  const stock = Number(p.stock) || 0;
+  const sizes  = (p.sizes  || "S,M,L,XL").split(",").map(s=>s.trim()).filter(Boolean);
+  const colors = (p.colors || "أسود").split(",").map(s=>s.trim()).filter(Boolean);
+  const { sale, orig, hasDiscount, badge } = calcDiscountedPrice(p);
+
+  window._pdState = {
+    productId: id,
+    color: colors[0] || "",
+    size:  sizes[0]  || "",
+    quantity: 1
+  };
+
+  const priceHTML = hasDiscount
+    ? `<span class="pd-original">${fmtPrice(orig)}</span>${fmtPrice(sale)}`
+    : fmtPrice(orig);
+
+  const mainImg = imageForColor(p, window._pdState.color);
 
   openModal(`
     <div class="modal-head">
       <h3>${esc(name)}</h3>
-      <button class="close-btn" onclick="closeModal()">×</button>
+      <button class="close-btn" onclick="closeModal()">${ICONS.close}</button>
     </div>
     <div class="modal-body">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
-        <div class="product-img" style="aspect-ratio:3/4;border-radius:var(--radius);">
-          ${p.imageURL ? `<img src="${p.imageURL}" alt="${name}">` : "ع"}
+      <div class="pd-grid">
+        <div>
+          <div class="pd-img" id="pdImg">${mainImg ? `<img src="${mainImg}">` : `<div class="placeholder">${ICONS.silhouette}</div>`}</div>
         </div>
         <div>
-          <div style="color:var(--gold);font-size:24px;font-weight:700;margin-bottom:8px;">${fmtPrice(p.price)}</div>
-          <p style="color:var(--text-dim);margin-bottom:18px;">${esc(desc)}</p>
-          <div class="form-grid">
-            <div class="form-row">
-              <label>${t("size")}</label>
-              <select id="psize">${sizes.map(s => `<option>${s}</option>`).join("")}</select>
-            </div>
-            <div class="form-row">
-              <label>${t("color")}</label>
-              <select id="pcolor">${colors.map(s => `<option>${s}</option>`).join("")}</select>
-            </div>
-            <div class="form-row">
-              <label>${t("quantity")}</label>
-              <input id="pqty" type="number" min="1" max="${stock || 99}" value="1">
+          <div class="pd-name">${esc(name)}</div>
+          ${hasDiscount ? `<div style="display:inline-block;background:var(--gold);color:#0a0a0a;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;margin-bottom:10px;">${esc(badge)}</div>` : ""}
+          <div class="pd-price">${priceHTML}</div>
+          ${desc ? `<div class="pd-desc">${esc(desc)}</div>` : ""}
+          <div class="pd-group">
+            <label>${t("pd_color")}</label>
+            ${colors.map(c => `<button class="opt-chip ${c===window._pdState.color?'active':''}" onclick="pdSelectColor('${esc(c)}')">${esc(c)}</button>`).join("")}
+          </div>
+          <div class="pd-group">
+            <label>${t("pd_size")}</label>
+            ${sizes.map(sz => `<button class="opt-chip ${sz===window._pdState.size?'active':''}" onclick="pdSelectSize('${esc(sz)}')">${esc(sz)}</button>`).join("")}
+          </div>
+          <div class="pd-group">
+            <label>${t("pd_qty")}</label>
+            <div class="qty" style="background:var(--surface);">
+              <button onclick="pdChangeQty(-1)">−</button>
+              <span id="pdQty">${window._pdState.quantity}</span>
+              <button onclick="pdChangeQty(1)">+</button>
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="modal-foot">
-      <button class="btn" onclick="closeModal()">${t("cancel")}</button>
-      <button class="btn btn-primary" ${stock <= 0 ? "disabled" : ""} onclick="addToCart('${p.id}')">
-        ${stock <= 0 ? t("out_of_stock") : t("add_to_cart")}
-      </button>
+      <button class="btn btn-ghost" onclick="closeModal()">${t("close")}</button>
+      <button class="btn btn-primary" onclick="pdAddToCart()">${t("add_to_cart")}</button>
     </div>
   `);
 }
+window.openProduct = openProduct;
 
-function addToCart(productId) {
-  const p = _products.find(x => x.id === productId);
+function pdSelectColor(c) {
+  if (!window._pdState) return;
+  window._pdState.color = c;
+  const p = _products.find(x => x.id === window._pdState.productId);
+  const img = imageForColor(p, c);
+  const imgEl = document.getElementById("pdImg");
+  if (imgEl && img) imgEl.innerHTML = `<img src="${img}">`;
+  document.querySelectorAll(".pd-group:nth-of-type(1) .opt-chip").forEach(el => el.classList.remove("active"));
+  event && event.target && event.target.classList.add("active");
+}
+window.pdSelectColor = pdSelectColor;
+
+function pdSelectSize(s) {
+  if (!window._pdState) return;
+  window._pdState.size = s;
+  document.querySelectorAll(".pd-group:nth-of-type(2) .opt-chip").forEach(el => el.classList.remove("active"));
+  event && event.target && event.target.classList.add("active");
+}
+window.pdSelectSize = pdSelectSize;
+
+function pdChangeQty(delta) {
+  if (!window._pdState) return;
+  window._pdState.quantity = Math.max(1, window._pdState.quantity + delta);
+  const q = document.getElementById("pdQty");
+  if (q) q.textContent = window._pdState.quantity;
+}
+window.pdChangeQty = pdChangeQty;
+
+function pdAddToCart() {
+  const st = window._pdState;
+  if (!st) return;
+  const p = _products.find(x => x.id === st.productId);
   if (!p) return;
-  const size = document.getElementById("psize").value;
-  const color = document.getElementById("pcolor").value;
-  const qty = Math.max(1, parseInt(document.getElementById("pqty").value) || 1);
-
-  const existingIdx = _cart.findIndex(it => it.productId === productId && it.size === size && it.color === color);
-  if (existingIdx >= 0) {
-    _cart[existingIdx].quantity += qty;
-  } else {
-    _cart.push({
-      productId: p.id,
-      nameAr: p.nameAr, nameEn: p.nameEn,
-      price: Number(p.price),
-      imageURL: p.imageURL || null,
-      size, color, quantity: qty
-    });
-  }
-  saveCart();
-  closeModal();
-  renderStorefront();
-  showToast(t("saved"), "success");
-  setTimeout(openCart, 200);
-}
-
-function openCart() {
-  let drawer = document.getElementById("cartDrawer");
-  if (!drawer) {
-    drawer = document.createElement("div");
-    drawer.id = "cartDrawer";
-    drawer.className = "drawer";
-    document.body.appendChild(drawer);
-  }
-  drawer.innerHTML = renderCart();
-  setTimeout(() => drawer.classList.add("open"), 10);
-
-  // close on outside click
-  document.addEventListener("click", outsideCart, { capture: true });
-}
-
-function outsideCart(e) {
-  const drawer = document.getElementById("cartDrawer");
-  if (drawer && drawer.classList.contains("open")
-      && !drawer.contains(e.target)
-      && !e.target.closest(".cart-btn")) {
-    closeCart();
-  }
-}
-function closeCart() {
-  const drawer = document.getElementById("cartDrawer");
-  if (drawer) drawer.classList.remove("open");
-  document.removeEventListener("click", outsideCart, { capture: true });
-}
-
-function renderCart() {
-  const s = window.AmalSettings || {};
-  const subtotal = cartSubtotal();
-  const shipping = _cart.length ? Number(s.shippingFee || 0) : 0;
-  const total = subtotal + shipping;
   const lang = getLang();
-
-  return `
-    <div class="drawer-head">
-      <h3>${t("cart")}</h3>
-      <button class="close-btn" onclick="closeCart()">×</button>
-    </div>
-    <div class="cart-items">
-      ${_cart.length ? _cart.map((it, i) => {
-        const name = (lang === "ar" ? it.nameAr : it.nameEn) || it.nameEn || it.nameAr;
-        return `
-        <div class="cart-item">
-          <div class="cart-item-img">${it.imageURL ? `<img src="${it.imageURL}">` : "ع"}</div>
-          <div class="cart-item-info">
-            <div class="cart-item-name">${esc(name)}</div>
-            <div class="cart-item-meta">${esc(it.size)} · ${esc(it.color)}</div>
-            <div class="cart-item-price">${fmtPrice(it.price * it.quantity)}</div>
-            <div class="qty-ctl">
-              <button onclick="adjCart(${i}, -1)">−</button>
-              <span>${it.quantity}</span>
-              <button onclick="adjCart(${i}, 1)">+</button>
-              <button onclick="removeCart(${i})" style="margin-left:auto;color:var(--danger);">✕</button>
-            </div>
-          </div>
-        </div>`;
-      }).join("") : `<div class="empty"><div class="empty-icon">✦</div><div>${t("empty_cart")}</div></div>`}
-    </div>
-    <div class="drawer-foot">
-      <div class="cart-row"><span>${t("subtotal")}</span><span>${fmtPrice(subtotal)}</span></div>
-      <div class="cart-row"><span>${t("shipping")}</span><span>${fmtPrice(shipping)}</span></div>
-      <div class="cart-row total"><span>${t("total")}</span><span>${fmtPrice(total)}</span></div>
-      <button class="btn btn-primary btn-block" style="margin-top:14px;" ${_cart.length ? "" : "disabled"} onclick="startCheckout()">
-        ${t("checkout")}
-      </button>
-    </div>`;
-}
-
-function adjCart(i, delta) {
-  _cart[i].quantity = Math.max(1, _cart[i].quantity + delta);
-  saveCart();
+  const name = (lang === "ar" ? p.nameAr : p.nameEn) || p.nameAr || p.nameEn || "—";
+  const { sale } = calcDiscountedPrice(p);
+  addToCart({
+    productId: p.id,
+    name,
+    image: imageForColor(p, st.color),
+    color: st.color,
+    size: st.size,
+    quantity: st.quantity,
+    price: sale
+  });
+  closeModal();
   openCart();
 }
-function removeCart(i) {
-  _cart.splice(i, 1);
-  saveCart();
-  renderStorefront();
-  openCart();
-}
+window.pdAddToCart = pdAddToCart;
 
-// ---------- Checkout ----------
-function startCheckout() {
-  _checkoutStep = 0;
-  _checkoutData = {};
-  _paymentProofFile = null;
-  _paymentProofPreview = null;
+// ── CHECKOUT ───────────────────────────────────────────────
+function openCheckout() {
+  if (!_cart.length) return;
   closeCart();
-  renderCheckout();
-}
+  const s = window.AmalSettings || {};
+  const cities = getCities();
+  const accounts = Array.isArray(s.bankAccounts) && s.bankAccounts.length
+    ? s.bankAccounts
+    : (s.bankName ? [{ bankName: s.bankName, accountName: s.accountName, accountNumber: s.accountNumber, iban: s.iban }] : []);
+  const sub = cartSubtotal();
+  const free = sub >= 200;
+  const ship = free ? 0 : (Number(s.shippingFee) || 25);
 
-function renderCheckout() {
-  const stepHTML = [renderStep1, renderStep2, renderStep3][_checkoutStep]();
   openModal(`
     <div class="modal-head">
-      <h3>${t("checkout")}</h3>
-      <button class="close-btn" onclick="closeModal()">×</button>
+      <h3>${t("checkout_title")}</h3>
+      <button class="close-btn" onclick="closeModal()">${ICONS.close}</button>
     </div>
     <div class="modal-body">
-      <div class="steps">
-        <div class="step ${_checkoutStep === 0 ? 'active' : (_checkoutStep > 0 ? 'done' : '')}">1. ${t("step_details")}</div>
-        <div class="step ${_checkoutStep === 1 ? 'active' : (_checkoutStep > 1 ? 'done' : '')}">2. ${t("step_payment")}</div>
-        <div class="step ${_checkoutStep === 2 ? 'active' : ''}">3. ${t("step_review")}</div>
+      <div class="field-grid">
+        <div class="field"><label>${t("name")} *</label><input id="ck_name" required></div>
+        <div class="field"><label>${t("whatsapp")} *</label><input id="ck_wa" required dir="ltr"></div>
       </div>
-      ${stepHTML}
-    </div>
-  `);
-}
-
-function renderStep1() {
-  const d = _checkoutData;
-  const lang = getLang();
-  return `
-    <div class="form-grid">
-      <div class="form-row">
-        <label>${t("full_name")} *</label>
-        <input id="co_name" value="${esc(d.name || "")}" required>
-      </div>
-      <div class="form-grid form-grid-2">
-        <div class="form-row">
-          <label>${t("whatsapp")} *</label>
-          <input id="co_whatsapp" value="${esc(d.whatsapp || "")}" placeholder="970599..." required>
-        </div>
-        <div class="form-row">
+      <div class="field-grid">
+        <div class="field"><label>${t("phone")}</label><input id="ck_phone" dir="ltr"></div>
+        <div class="field">
           <label>${t("city")} *</label>
-          <select id="co_city">
-            ${PALESTINIAN_CITIES.map(c => `<option value="${c.en}" ${d.city === c.en ? 'selected' : ''}>${lang === "ar" ? c.ar : c.en}</option>`).join("")}
+          <select id="ck_city" required>
+            <option value="">${t("select_city")}</option>
+            ${cities.map(c => `<option value="${esc(c.en||c.ar)}">${getLang()==='ar'?esc(c.ar):esc(c.en)}</option>`).join("")}
           </select>
         </div>
       </div>
-      <div class="form-row">
-        <label>${t("address")} *</label>
-        <input id="co_address" value="${esc(d.address || "")}" required>
+      <div class="field"><label>${t("address")} *</label><textarea id="ck_addr" rows="2" required></textarea></div>
+      <div class="field"><label>${t("notes")}</label><textarea id="ck_notes" rows="2"></textarea></div>
+      <div class="field">
+        <label>${t("pay_method")}</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="opt-chip active" id="pm_cod" onclick="pickPay('cod')">${t("pay_cod")}</button>
+          <button class="opt-chip" id="pm_bank" onclick="pickPay('bank')">${t("pay_bank")}</button>
+        </div>
       </div>
-      <div class="form-row">
-        <label>${t("notes")}</label>
-        <textarea id="co_notes" rows="2">${esc(d.notes || "")}</textarea>
+      <div id="bankInfoBox" style="display:none;background:var(--surface);border:1px solid var(--hairline);border-radius:8px;padding:14px;margin-bottom:14px;">
+        <div style="font-size:13px;color:var(--gold);font-weight:600;margin-bottom:8px;">${t("bank_info_title")}</div>
+        ${accounts.length ? accounts.map(a => `
+          <div style="font-size:13px;color:var(--text-dim);line-height:1.9;margin-bottom:6px;">
+            <strong style="color:var(--text);">${esc(a.bankName||'—')}</strong><br>
+            ${a.accountName ? `${esc(a.accountName)}<br>` : ""}
+            ${a.accountNumber ? `${t("account_number")}: <span dir="ltr">${esc(a.accountNumber)}</span><br>` : ""}
+            ${a.iban ? `IBAN: <span dir="ltr">${esc(a.iban)}</span>` : ""}
+          </div>
+        `).join("<hr style='border-color:var(--hairline);margin:8px 0;'>") : `<div style="color:var(--text-dim);">${t("no_data")}</div>`}
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--hairline);border-radius:8px;padding:14px;font-size:14px;">
+        <div style="display:flex;justify-content:space-between;padding:4px 0;"><span>${t("subtotal")}</span><span>${fmtPrice(sub)}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;"><span>${t("shipping")}</span><span>${free?`<span style="color:var(--gold);">${t("shipping_free")}</span>`:fmtPrice(ship)}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0 0;border-top:1px dashed var(--hairline);margin-top:6px;font-weight:700;color:var(--gold);font-size:16px;">
+          <span>${t("total")}</span><span>${fmtPrice(sub + ship)}</span>
+        </div>
       </div>
     </div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
-      <button class="btn" onclick="closeModal()">${t("cancel")}</button>
-      <button class="btn btn-primary" onclick="checkoutNext()">${t("next")} <span class="arrow">→</span></button>
-    </div>`;
-}
-
-function renderStep2() {
-  const s = window.AmalSettings || {};
-  return `
-    <div class="bank-info">
-      <h4>${t("bank_info")}</h4>
-      <div style="color:var(--text-dim);margin:8px 0 14px;font-size:13px;">${t("bank_name")}: <strong>${esc(s.bankName)}</strong></div>
-      <div style="color:var(--text-dim);font-size:13px;">${t("account_name")}: <strong>${esc(s.accountName)}</strong></div>
-      <div class="iban-chip">${esc(s.iban)}</div>
-      <div style="color:var(--gold);margin-top:14px;font-size:18px;font-weight:700;">${t("total")}: ${fmtPrice(cartSubtotal() + Number(s.shippingFee || 0))}</div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">${t("cancel")}</button>
+      <button class="btn btn-primary" onclick="submitOrder()">${t("place_order")}</button>
     </div>
-    <div class="form-row" style="margin-top:14px;">
-      <label>${t("upload_proof")} *</label>
-      <div class="upload-zone" onclick="document.getElementById('co_proof').click()" id="proofZone">
-        ${_paymentProofPreview
-          ? `<img src="${_paymentProofPreview}">`
-          : `<div style="font-size:36px;opacity:0.4;margin-bottom:8px;">⬆</div><div>${t("upload_hint")}</div>`}
-      </div>
-      <input type="file" id="co_proof" accept="image/*" style="display:none;" onchange="onProofSelected(event)">
-    </div>
-    <div style="display:flex;gap:10px;justify-content:space-between;margin-top:20px;">
-      <button class="btn" onclick="checkoutBack()"><span class="arrow">←</span> ${t("back")}</button>
-      <button class="btn btn-primary" onclick="checkoutNext()">${t("next")} <span class="arrow">→</span></button>
-    </div>`;
+  `);
+  window._payMethod = "cod";
 }
+window.openCheckout = openCheckout;
 
-function renderStep3() {
-  const d = _checkoutData;
-  const s = window.AmalSettings || {};
-  const lang = getLang();
-  const subtotal = cartSubtotal();
-  const shipping = Number(s.shippingFee || 0);
-  const total = subtotal + shipping;
-  return `
-    <div class="card" style="margin-bottom:14px;">
-      <div style="color:var(--gold);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">${t("step_details")}</div>
-      <div>${esc(d.name)} · ${esc(d.whatsapp)}</div>
-      <div style="color:var(--text-dim);font-size:13px;">${cityLabel(d.city)} — ${esc(d.address)}</div>
-    </div>
-    <div class="card" style="margin-bottom:14px;">
-      <div style="color:var(--gold);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">${t("items")}</div>
-      ${_cart.map(it => {
-        const name = (lang === "ar" ? it.nameAr : it.nameEn) || it.nameEn || it.nameAr;
-        return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-soft);">
-          <div><span>${esc(name)}</span> <span style="color:var(--text-mute);font-size:12px;">×${it.quantity} · ${esc(it.size)} · ${esc(it.color)}</span></div>
-          <div style="color:var(--gold);">${fmtPrice(it.price * it.quantity)}</div>
-        </div>`;
-      }).join("")}
-      <div style="margin-top:10px;color:var(--text-dim);font-size:13px;">
-        ${t("subtotal")}: <strong>${fmtPrice(subtotal)}</strong> · ${t("shipping")}: <strong>${fmtPrice(shipping)}</strong>
-      </div>
-      <div style="margin-top:6px;color:var(--gold);font-size:20px;font-weight:700;">${t("total")}: ${fmtPrice(total)}</div>
-    </div>
-    ${_paymentProofPreview ? `
-      <div class="card">
-        <div style="color:var(--gold);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">${t("upload_proof")}</div>
-        <img src="${_paymentProofPreview}" style="max-width:100%;max-height:200px;border-radius:8px;">
-      </div>` : ""}
-    <div style="display:flex;gap:10px;justify-content:space-between;margin-top:20px;">
-      <button class="btn" onclick="checkoutBack()"><span class="arrow">←</span> ${t("back")}</button>
-      <button class="btn btn-primary" id="confirmBtn" onclick="submitOrder()">${t("confirm_order")}</button>
-    </div>`;
+function pickPay(m) {
+  window._payMethod = m;
+  document.getElementById("pm_cod").classList.toggle("active", m === "cod");
+  document.getElementById("pm_bank").classList.toggle("active", m === "bank");
+  const box = document.getElementById("bankInfoBox");
+  if (box) box.style.display = m === "bank" ? "block" : "none";
 }
-
-async function onProofSelected(e) {
-  const f = e.target.files[0];
-  if (!f) return;
-  // Show "compressing..." while we work
-  const zone = document.getElementById("proofZone");
-  if (zone) zone.innerHTML = `<div class="spinner"></div><div style="margin-top:8px;">Compressing…</div>`;
-  try {
-    // Compress to a base64 data URL that fits Firestore's 1 MB doc limit.
-    const dataURL = await compressImage(f, { maxDim: 1200, maxBytes: 650_000, startQuality: 0.8 });
-    _paymentProofFile = f;          // keep original ref for filename (not used anymore)
-    _paymentProofPreview = dataURL; // both preview and what we'll save are the same string
-    renderCheckout();
-  } catch (err) {
-    showToast("Could not process image: " + err.message, "error");
-    renderCheckout();
-  }
-}
-
-function checkoutNext() {
-  if (_checkoutStep === 0) {
-    const n = document.getElementById("co_name").value.trim();
-    const w = document.getElementById("co_whatsapp").value.trim();
-    const c = document.getElementById("co_city").value;
-    const a = document.getElementById("co_address").value.trim();
-    const notes = document.getElementById("co_notes").value.trim();
-    if (!n || !w || !a) { showToast("Please fill all required fields", "error"); return; }
-    _checkoutData = { name: n, whatsapp: w, city: c, address: a, notes };
-  } else if (_checkoutStep === 1) {
-    if (!_paymentProofFile) { showToast("Please upload payment proof", "error"); return; }
-  }
-  _checkoutStep++;
-  renderCheckout();
-}
-function checkoutBack() { if (_checkoutStep > 0) { _checkoutStep--; renderCheckout(); } }
+window.pickPay = pickPay;
 
 async function submitOrder() {
-  const btn = document.getElementById("confirmBtn");
-  if (btn) { btn.disabled = true; btn.innerHTML = `<span class="spinner"></span> …`; }
-  try {
-    await Amal.ensureAnonSignedIn();
-    const s = window.AmalSettings || {};
-
-    // Proof is already a compressed base64 data URL (see onProofSelected).
-    const res = await Amal.placeOrder({
-      customer: _checkoutData,
-      items: _cart.map(it => ({
-        productId: it.productId,
-        nameAr: it.nameAr, nameEn: it.nameEn,
-        price: it.price,
-        size: it.size, color: it.color,
-        quantity: it.quantity
-      })),
-      shippingFee: Number(s.shippingFee || 0),
-      paymentProofDataURL: _paymentProofPreview,
-      notes: _checkoutData.notes
-    });
-
-    // Clear cart
-    _cart = [];
-    saveCart();
-    closeModal();
-    renderStorefront();
-    showOrderSuccess(res.code);
-  } catch (e) {
-    showToast("Order failed: " + e.message, "error");
-    if (btn) { btn.disabled = false; btn.textContent = t("confirm_order"); }
+  const name  = document.getElementById("ck_name").value.trim();
+  const wa    = document.getElementById("ck_wa").value.trim();
+  const phone = document.getElementById("ck_phone").value.trim();
+  const city  = document.getElementById("ck_city").value;
+  const addr  = document.getElementById("ck_addr").value.trim();
+  const notes = document.getElementById("ck_notes").value.trim();
+  if (!name || !wa || !city || !addr) {
+    showToast(t("fill_required"), "error");
+    return;
   }
-}
-
-function showOrderSuccess(code) {
   const s = window.AmalSettings || {};
-  const waNumber = (s.whatsapp || "").replace(/[^0-9]/g, "");
-  const waText = encodeURIComponent(`Hi! My order code is ${code}`);
-  openModal(`
-    <div class="modal-head">
-      <h3 style="color:var(--gold);">✓ ${t("order_placed")}</h3>
-      <button class="close-btn" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-body" style="text-align:center;">
-      <div style="font-size:14px;color:var(--text-dim);margin-bottom:6px;">${t("order_code")}</div>
-      <div style="font-family:'Courier New',monospace;font-size:32px;color:var(--gold);letter-spacing:4px;margin-bottom:20px;">${code}</div>
-      <p style="color:var(--text-dim);">${t("order_thanks")}</p>
-    </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="closeModal()">${t("continue_shopping")}</button>
-      <a class="btn btn-primary" target="_blank" href="https://wa.me/${waNumber}?text=${waText}">${t("contact_whatsapp")}</a>
-    </div>
-  `);
-}
-
-// ---------- Admin login from storefront ----------
-function openAdminLogin() {
-  openModal(`
-    <div class="modal-head">
-      <h3>${t("admin_pin")}</h3>
-      <button class="close-btn" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-grid">
-        <div class="form-row">
-          <label>Email</label>
-          <input id="al_email" type="email" value="${(window.AmalSettings && window.AmalSettings.adminEmail) || 'admin@amal-abaya.local'}">
-        </div>
-        <div class="form-row">
-          <label>${t("pin")}</label>
-          <input id="al_pin" type="password" placeholder="••••••">
-        </div>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="closeModal()">${t("cancel")}</button>
-      <button class="btn btn-primary" id="loginBtn" onclick="doAdminLogin()">${t("login")}</button>
-    </div>
-  `);
-  setTimeout(() => document.getElementById("al_pin").focus(), 80);
-}
-
-async function doAdminLogin() {
-  const email = document.getElementById("al_email").value.trim();
-  const pin = document.getElementById("al_pin").value;
-  const btn = document.getElementById("loginBtn");
-  btn.disabled = true; btn.innerHTML = `<span class="spinner"></span>`;
+  const sub = cartSubtotal();
+  const free = sub >= 200;
+  const ship = free ? 0 : (Number(s.shippingFee) || 25);
+  const order = {
+    items: _cart.map(it => ({
+      productId: it.productId, name: it.name,
+      color: it.color, size: it.size,
+      price: it.price, quantity: it.quantity
+    })),
+    customer: { name, whatsapp: wa, phone, city, address: addr },
+    notes,
+    paymentMethod: window._payMethod || "cod",
+    subtotal: sub,
+    shipping: ship,
+    total: sub + ship,
+    status: "processing"
+  };
   try {
-    await Amal.adminLogin(email, pin);
+    await Amal.placeOrder(order);
+    _cart = []; saveCart();
     closeModal();
-    showToast("Welcome back", "success");
-    window.location.hash = "#admin";
+    showToast(t("order_placed"), "success");
   } catch (e) {
-    // Surface the actual Firebase auth error so the admin can fix the cause
-    const code = (e && e.code) || "";
-    const map = {
-      "auth/wrong-password":       "Wrong password",
-      "auth/invalid-credential":   "Wrong email or password",
-      "auth/user-not-found":       "No account with that email",
-      "auth/invalid-email":        "Invalid email format",
-      "auth/too-many-requests":    "Too many tries — wait a few minutes",
-      "auth/unauthorized-domain":  "This domain is not authorized in Firebase Auth settings",
-      "auth/operation-not-allowed":"Email/Password sign-in is disabled in Firebase",
-      "auth/network-request-failed":"Network error — check connection"
-    };
-    const msg = map[code] || (code ? code : (e.message || t("wrong_pin")));
-    console.error("[AMAL] login failed:", code, e.message);
-    showToast(msg, "error");
-    btn.disabled = false; btn.textContent = t("login");
+    showToast(e.message || t("error_generic"), "error");
   }
 }
+window.submitOrder = submitOrder;
 
-// ---------- helpers ----------
-function esc(s) {
-  return String(s == null ? "" : s).replace(/[&<>"']/g, c =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-}
-
+// ── MODAL / TOAST ──────────────────────────────────────────
 function openModal(html) {
-  let ov = document.getElementById("overlay");
-  if (!ov) {
-    ov = document.createElement("div");
-    ov.id = "overlay";
-    ov.className = "overlay";
-    document.body.appendChild(ov);
-  }
-  ov.innerHTML = `<div class="modal">${html}</div>`;
-  ov.classList.add("show");
+  const root = document.getElementById("modal-root");
+  root.innerHTML = `<div class="modal-backdrop" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`;
+  requestAnimationFrame(() => root.querySelector(".modal-backdrop").classList.add("open"));
 }
 function closeModal() {
-  const ov = document.getElementById("overlay");
-  if (ov) ov.classList.remove("show");
+  const root = document.getElementById("modal-root");
+  const bd = root.querySelector(".modal-backdrop");
+  if (!bd) return;
+  bd.classList.remove("open");
+  setTimeout(() => { root.innerHTML = ""; }, 300);
 }
+window.openModal = openModal;
+window.closeModal = closeModal;
 
-function showToast(msg, type = "") {
+function showToast(msg, type = "info") {
+  const root = document.getElementById("toast-root");
+  if (!root) return;
   const el = document.createElement("div");
   el.className = "toast " + type;
   el.textContent = msg;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 3000);
+  root.appendChild(el);
+  setTimeout(() => { el.style.opacity = "0"; setTimeout(() => el.remove(), 250); }, 2800);
 }
-
-function showLoading(on) {
-  let l = document.getElementById("loading");
-  if (on) {
-    if (!l) {
-      l = document.createElement("div");
-      l.id = "loading";
-      l.className = "loading-screen";
-      l.innerHTML = `
-        <div class="brand">AMAL ABAYA</div>
-        <div class="spinner"></div>
-        <div class="label">LOADING…</div>`;
-      document.body.appendChild(l);
-    }
-  } else {
-    if (l) l.remove();
-  }
-}
-
-window.openCart = openCart;
-window.closeCart = closeCart;
-window.openProduct = openProduct;
-window.addToCart = addToCart;
-window.adjCart = adjCart;
-window.removeCart = removeCart;
-window.startCheckout = startCheckout;
-window.checkoutNext = checkoutNext;
-window.checkoutBack = checkoutBack;
-window.onProofSelected = onProofSelected;
-window.submitOrder = submitOrder;
-window.openAdminLogin = openAdminLogin;
-window.doAdminLogin = doAdminLogin;
-window.closeModal = closeModal;
-window.openModal = openModal;
 window.showToast = showToast;
-window.showLoading = showLoading;
-window.esc = esc;
+
 window.loadStorefront = loadStorefront;
-window.renderStorefront = renderStorefront;
