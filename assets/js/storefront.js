@@ -551,4 +551,48 @@ function closeModal() {
 }
 
 function showToast(msg, type = "") {
-  const el = 
+  const el = document.createElement("div");
+  el.className = "toast " + type;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+function showLoading(on) {
+  let l = document.getElementById("loading");
+  if (on) {
+    if (!l) {
+      l = document.createElement("div");
+      l.id = "loading";
+      l.className = "loading-screen";
+      l.innerHTML = `
+        <div class="brand">AMAL ABAYA</div>
+        <div class="spinner"></div>
+        <div class="label">LOADING…</div>`;
+      document.body.appendChild(l);
+    }
+  } else {
+    if (l) l.remove();
+  }
+}
+
+window.openCart = openCart;
+window.closeCart = closeCart;
+window.openProduct = openProduct;
+window.addToCart = addToCart;
+window.adjCart = adjCart;
+window.removeCart = removeCart;
+window.startCheckout = startCheckout;
+window.checkoutNext = checkoutNext;
+window.checkoutBack = checkoutBack;
+window.onProofSelected = onProofSelected;
+window.submitOrder = submitOrder;
+window.openAdminLogin = openAdminLogin;
+window.doAdminLogin = doAdminLogin;
+window.closeModal = closeModal;
+window.openModal = openModal;
+window.showToast = showToast;
+window.showLoading = showLoading;
+window.esc = esc;
+window.loadStorefront = loadStorefront;
+window.renderStorefront = renderStorefront;
