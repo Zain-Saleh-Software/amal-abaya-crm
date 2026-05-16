@@ -288,43 +288,8 @@ function openProductForm(id) {
         <div class="form-row"><label>Sizes (comma)</label><input id="pf_sizes" value="${esc(p?.sizes || "S,M,L,XL")}"></div>
         <div class="form-row"><label>Colors (comma)</label><input id="pf_colors" value="${esc(p?.colors || "Black")}"></div>
       </div>
-      <div class="form-grid form-grid-2" style="margin-top:12px;">
-        <div class="form-row">
-          <label>Category / التصنيف</label>
-          <select id="pf_cat">
-            <option value=""           ${(!p?.category)?'selected':''}>—</option>
-            <option value="practical"  ${p?.category==='practical'?'selected':''}>${t("cat_practical")}</option>
-            <option value="occasion"   ${p?.category==='occasion'?'selected':''}>${t("cat_occasion")}</option>
-            <option value="black"      ${p?.category==='black'?'selected':''}>${t("cat_black")}</option>
-            <option value="open"       ${p?.category==='open'?'selected':''}>${t("cat_open")}</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <label>${t("discount")} (% or fixed)</label>
-          <div style="display:flex; gap:8px;">
-            <select id="pf_disc_type" style="flex:0 0 110px;">
-              <option value="percent" ${(p?.discount?.type||'percent')==='percent'?'selected':''}>%</option>
-              <option value="amount"  ${p?.discount?.type==='amount'?'selected':''}>₪</option>
-            </select>
-            <input id="pf_disc_val" type="number" step="0.01" min="0" value="${p?.discount?.value || 0}" placeholder="0">
-          </div>
-        </div>
-      </div>
       <div class="form-row" style="margin-top:12px;">
-        <label>Variants — color × size × stock (one per line, format: color | size | stock)</label>
-        <textarea id="pf_variants" rows="3" placeholder="Black | M | 5
-Black | L | 3
-Beige | M | 2">${esc((p?.variants||[]).map(v => `${v.color||''} | ${v.size||''} | ${v.stock||0}`).join("\n"))}</textarea>
-        <small style="color:var(--text-mute);">Leave empty to use the simple Stock field above.</small>
-      </div>
-      <div class="form-row" style="margin-top:12px;">
-        <label>Extra images — color | URL (one per line, optional)</label>
-        <textarea id="pf_images" rows="3" placeholder="Black | data:image/jpeg;base64,...
-Beige | https://...">${esc((p?.images||[]).map(im => `${im.color||''} | ${im.url||''}`).join("\n"))}</textarea>
-        <small style="color:var(--text-mute);">When a customer picks that color, this image is shown.</small>
-      </div>
-      <div class="form-row" style="margin-top:12px;">
-        <label>${t("image")} (main / fallback)</label>
+        <label>${t("image")}</label>
         <div class="upload-zone" onclick="document.getElementById('pf_img').click()" id="pf_imgZone">
           ${p?.imageURL ? `<img src="${p.imageURL}">` : `<div>Click to choose image</div>`}
         </div>
@@ -360,21 +325,6 @@ async function saveProduct(id) {
   btn.disabled = true; btn.innerHTML = `<span class="spinner"></span>`;
   try {
     // Image is already a compressed base64 data URL on window._pfImg
-    // Parse variants textarea → [{color, size, stock}]
-    const variants = (document.getElementById("pf_variants").value || "")
-      .split("\n").map(l => l.trim()).filter(Boolean)
-      .map(l => {
-        const [color, size, stock] = l.split("|").map(x => (x||"").trim());
-        return { color, size, stock: Number(stock) || 0 };
-      });
-    // Parse images textarea → [{color, url}]
-    const images = (document.getElementById("pf_images").value || "")
-      .split("\n").map(l => l.trim()).filter(Boolean)
-      .map(l => {
-        const idx = l.indexOf("|");
-        if (idx < 0) return { color: "", url: l };
-        return { color: l.slice(0, idx).trim(), url: l.slice(idx+1).trim() };
-      });
     const data = {
       nameEn: document.getElementById("pf_en").value.trim(),
       nameAr: document.getElementById("pf_ar").value.trim(),
@@ -386,13 +336,6 @@ async function saveProduct(id) {
       lowThreshold: Number(document.getElementById("pf_low").value) || 3,
       sizes:  document.getElementById("pf_sizes").value.trim(),
       colors: document.getElementById("pf_colors").value.trim(),
-      category: document.getElementById("pf_cat").value || "",
-      discount: {
-        type:  document.getElementById("pf_disc_type").value || "percent",
-        value: Number(document.getElementById("pf_disc_val").value) || 0
-      },
-      variants,
-      images,
       imageURL: window._pfImg || null
     };
 
@@ -973,23 +916,6 @@ function renderCustomers() {
 // ============================================
 function renderSettings() {
   const s = _data.settings || {};
-  // Bank accounts: support legacy single (bankName/accountName/iban) AND new list
-  const accounts = Array.isArray(s.bankAccounts) && s.bankAccounts.length
-    ? s.bankAccounts
-    : (s.bankName || s.iban
-        ? [{ bankName: s.bankName || "", accountName: s.accountName || "", accountNumber: s.accountNumber || "", iban: s.iban || "" }]
-        : [{ bankName: "", accountName: "", accountNumber: "", iban: "" }]);
-  window._adminBankAccounts = JSON.parse(JSON.stringify(accounts));
-
-  // Cities — start with current settings.cities OR DEFAULT_CITIES
-  const cities = Array.isArray(s.cities) && s.cities.length
-    ? s.cities
-    : (window.DEFAULT_CITIES || []);
-  window._adminCities = JSON.parse(JSON.stringify(cities));
-
-  // Banner preview
-  window._adminBanner = s.bannerURL || null;
-
   return `${adminHead(t("settings"), "")}
     <div class="card">
       <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:14px;">${t("business")}</h3>
@@ -997,143 +923,36 @@ function renderSettings() {
         <div class="form-row"><label>Collection Tag</label><input id="set_tag" value="${esc(s.collectionTag||'')}"></div>
         <div class="form-row"><label>${t("instagram_handle")}</label><input id="set_ig" value="${esc(s.instagram||'')}"></div>
         <div class="form-row"><label>${t("whatsapp")}</label><input id="set_wa" value="${esc(s.whatsapp||'')}"></div>
-        <div class="form-row"><label>${t("phone_label")}</label><input id="set_phone" value="${esc(s.phone||'')}"></div>
         <div class="form-row"><label>${t("shipping_fee")}</label><input id="set_ship" type="number" value="${s.shippingFee||25}"></div>
         <div class="form-row"><label>${t("currency")}</label><input id="set_cur" value="${esc(s.currency||'₪')}"></div>
         <div class="form-row"><label>Admin email</label><input id="set_email" value="${esc(s.adminEmail||'')}"></div>
       </div>
     </div>
-
-    <div class="card">
-      <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:14px;">${t("banner_image")}</h3>
-      <div class="form-row">
-        <div class="upload-zone" onclick="document.getElementById('set_banner').click()" id="set_bannerZone" style="min-height:160px;">
-          ${s.bannerURL ? `<img src="${s.bannerURL}" style="max-width:100%;max-height:240px;">` : `<div>${t("upload_banner")}</div>`}
-        </div>
-        <input type="file" id="set_banner" accept="image/*" style="display:none;" onchange="onBannerUpload(event)">
-        ${s.bannerURL ? `<button class="btn" style="margin-top:8px;" onclick="window._adminBanner=null; document.getElementById('set_bannerZone').innerHTML='<div>${t('upload_banner')}</div>'; ">${t("remove_banner")}</button>` : ""}
-      </div>
-    </div>
-
     <div class="card">
       <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:14px;">${t("bank_details")}</h3>
-      <div id="bankAccountsList">${renderBankAccountsList()}</div>
-      <button class="btn" onclick="addBankAccount()">+ ${t("add_bank_account")}</button>
+      <div class="form-grid form-grid-2">
+        <div class="form-row"><label>${t("bank_name")}</label><input id="set_bank" value="${esc(s.bankName||'')}"></div>
+        <div class="form-row"><label>${t("account_name")}</label><input id="set_acc" value="${esc(s.accountName||'')}"></div>
+      </div>
+      <div class="form-row" style="margin-top:12px;"><label>${t("iban")}</label><input id="set_iban" value="${esc(s.iban||'')}"></div>
     </div>
-
-    <div class="card">
-      <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:14px;">${t("city")} — ${t("delivery")}</h3>
-      <div id="citiesList">${renderCitiesList()}</div>
-      <button class="btn" onclick="addCity()">+ ${t("add_city")}</button>
-    </div>
-
     <div style="display:flex;gap:10px;justify-content:flex-end;">
       <button class="btn btn-primary" onclick="saveSettings()">${t("save")}</button>
     </div>`;
 }
 
-function renderBankAccountsList() {
-  const acc = window._adminBankAccounts || [];
-  if (!acc.length) return `<div style="color:var(--text-mute); margin-bottom:10px;">No accounts yet.</div>`;
-  return acc.map((a, i) => `
-    <div class="bank-row">
-      <div class="form-row"><label>${t("bank_name")}</label><input data-bank-i="${i}" data-bank-k="bankName" value="${esc(a.bankName||'')}"></div>
-      <div class="form-row"><label>${t("account_name")}</label><input data-bank-i="${i}" data-bank-k="accountName" value="${esc(a.accountName||'')}"></div>
-      <div class="form-row"><label>${t("account_number")}</label><input data-bank-i="${i}" data-bank-k="accountNumber" value="${esc(a.accountNumber||'')}"></div>
-      <div class="form-row" style="grid-column:1/-1;"><label>${t("iban")}</label><input data-bank-i="${i}" data-bank-k="iban" value="${esc(a.iban||'')}"></div>
-      <button class="btn-remove" onclick="removeBankAccount(${i})">${t("remove")}</button>
-    </div>`).join("");
-}
-function collectBankAccountInputs() {
-  document.querySelectorAll('[data-bank-i]').forEach(inp => {
-    const i = Number(inp.getAttribute('data-bank-i'));
-    const k = inp.getAttribute('data-bank-k');
-    if (window._adminBankAccounts[i]) window._adminBankAccounts[i][k] = inp.value;
-  });
-}
-function addBankAccount() {
-  collectBankAccountInputs();
-  window._adminBankAccounts = window._adminBankAccounts || [];
-  window._adminBankAccounts.push({ bankName: "", accountName: "", accountNumber: "", iban: "" });
-  document.getElementById("bankAccountsList").innerHTML = renderBankAccountsList();
-}
-function removeBankAccount(i) {
-  collectBankAccountInputs();
-  window._adminBankAccounts.splice(i, 1);
-  document.getElementById("bankAccountsList").innerHTML = renderBankAccountsList();
-}
-window.addBankAccount = addBankAccount;
-window.removeBankAccount = removeBankAccount;
-
-function renderCitiesList() {
-  const cities = window._adminCities || [];
-  if (!cities.length) return `<div style="color:var(--text-mute); margin-bottom:10px;">No cities yet.</div>`;
-  return cities.map((c, i) => `
-    <div class="city-row">
-      <div class="form-row"><label>${t("city_name_en")}</label><input data-city-i="${i}" data-city-k="en" value="${esc(c.en||'')}"></div>
-      <div class="form-row"><label>${t("city_name_ar")}</label><input data-city-i="${i}" data-city-k="ar" value="${esc(c.ar||'')}"></div>
-      <button class="btn-remove" onclick="removeCity(${i})">${t("remove")}</button>
-    </div>`).join("");
-}
-function collectCityInputs() {
-  document.querySelectorAll('[data-city-i]').forEach(inp => {
-    const i = Number(inp.getAttribute('data-city-i'));
-    const k = inp.getAttribute('data-city-k');
-    if (window._adminCities[i]) window._adminCities[i][k] = inp.value;
-  });
-}
-function addCity() {
-  collectCityInputs();
-  window._adminCities = window._adminCities || [];
-  window._adminCities.push({ en: "", ar: "" });
-  document.getElementById("citiesList").innerHTML = renderCitiesList();
-}
-function removeCity(i) {
-  collectCityInputs();
-  window._adminCities.splice(i, 1);
-  document.getElementById("citiesList").innerHTML = renderCitiesList();
-}
-window.addCity = addCity;
-window.removeCity = removeCity;
-
-async function onBannerUpload(e) {
-  const f = e.target.files[0]; if (!f) return;
-  const zone = document.getElementById("set_bannerZone");
-  if (zone) zone.innerHTML = `<div class="spinner"></div><div style="margin-top:8px;">Compressing…</div>`;
-  try {
-    const dataURL = await compressImage(f, { maxDim: 1920, maxBytes: 800_000, startQuality: 0.85 });
-    window._adminBanner = dataURL;
-    if (zone) zone.innerHTML = `<img src="${dataURL}" style="max-width:100%;max-height:240px;">`;
-  } catch (err) {
-    if (zone) zone.innerHTML = `<div style="color:var(--danger);">Image error: ${err.message}</div>`;
-  }
-}
-window.onBannerUpload = onBannerUpload;
-
 async function saveSettings() {
   try {
-    // Collect any in-flight typing in the dynamic lists
-    if (typeof collectBankAccountInputs === "function") collectBankAccountInputs();
-    if (typeof collectCityInputs === "function") collectCityInputs();
-    // First account also written to legacy fields for backward compat
-    const accs = window._adminBankAccounts || [];
-    const first = accs[0] || {};
     const data = {
       collectionTag: document.getElementById("set_tag").value,
       instagram: document.getElementById("set_ig").value,
       whatsapp: document.getElementById("set_wa").value,
-      phone: document.getElementById("set_phone").value,
       shippingFee: Number(document.getElementById("set_ship").value) || 0,
       currency: document.getElementById("set_cur").value,
       adminEmail: document.getElementById("set_email").value,
-      bannerURL: window._adminBanner || null,
-      bankAccounts: accs,
-      cities: window._adminCities || [],
-      // legacy mirror
-      bankName: first.bankName || "",
-      accountName: first.accountName || "",
-      accountNumber: first.accountNumber || "",
-      iban: first.iban || ""
+      bankName: document.getElementById("set_bank").value,
+      accountName: document.getElementById("set_acc").value,
+      iban: document.getElementById("set_iban").value
     };
     await Amal.saveSettings(data);
     window.AmalSettings = { ...window.AmalSettings, ...data };
