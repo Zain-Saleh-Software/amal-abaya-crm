@@ -178,10 +178,7 @@ function renderHero() {
       <div class="hero-inner">
         ${bannerImg}
         <div class="hero-eyebrow">${esc(t("hero_eyebrow"))}</div>
-        <h1>
-          ${esc(t("hero_title"))}
-          <span class="gold">${esc(t("hero_title_gold"))}</span>
-        </h1>
+        <h1>${esc(t("hero_title"))} ${esc(t("hero_title_gold"))}</h1>
         <p class="lead">${esc(t("hero_sub"))}</p>
         <div class="hero-cta">
           <button class="btn btn-primary btn-lg" onclick="scrollToId('collection')">
