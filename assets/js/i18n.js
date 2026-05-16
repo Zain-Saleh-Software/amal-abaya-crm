@@ -18,6 +18,7 @@ const TRANSLATIONS = {
     nav_categories:     "التصنيفات",
     nav_about:          "عنّا",
     nav_contact:        "تواصلي معنا",
+    nav_admin:          "لوحة الإدارة",
 
     cart:               "سلّتك",
     cart_label:         "عربة التسوق",
@@ -225,6 +226,7 @@ const TRANSLATIONS = {
     nav_categories:     "Categories",
     nav_about:          "About",
     nav_contact:        "Contact",
+    nav_admin:          "Admin",
     cart:               "Cart",
     cart_label:         "Shopping Cart",
     cart_empty:         "Your cart is empty",

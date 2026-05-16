@@ -144,6 +144,7 @@ function renderHeader() {
           <a class="nav-link" href="#cats" onclick="scrollToId('cats',event)">${t("nav_categories")}</a>
           <a class="nav-link" href="#about" onclick="scrollToId('about',event)">${t("nav_about")}</a>
           <a class="nav-link" href="#contact" onclick="scrollToId('contact',event)">${t("nav_contact")}</a>
+          <a class="nav-link" href="javascript:void(0)" onclick="openAdminLogin()">${t("nav_admin")}</a>
         </nav>
         <a href="#top" class="brand-mark" onclick="scrollToId('top',event)">عبايات <span>أمل</span></a>
         <div class="nav-right">
@@ -164,6 +165,7 @@ function renderHeader() {
       <a href="#cats" onclick="scrollToId('cats',event); closeMobileNav();">${t("nav_categories")}</a>
       <a href="#about" onclick="scrollToId('about',event); closeMobileNav();">${t("nav_about")}</a>
       <a href="#contact" onclick="scrollToId('contact',event); closeMobileNav();">${t("nav_contact")}</a>
+      <a href="javascript:void(0)" onclick="closeMobileNav(); openAdminLogin();">${t("nav_admin")}</a>
     </div>
   `;
 }
@@ -376,7 +378,7 @@ function renderFooter(s) {
           <a href="tel:${esc(s.phone||s.whatsapp||'')}">${esc(s.phone||s.whatsapp||"—")}</a>
           <a href="https://wa.me/${(s.whatsapp||'').replace(/[^0-9]/g,'')}" target="_blank">${t("contact_wa")}</a>
           <a href="https://instagram.com/${esc(s.instagram||'amal.abayas')}" target="_blank">${t("contact_ig")}</a>
-          <a href="#admin">${t("logout")||"Admin"}</a>
+          <a href="javascript:void(0)" onclick="openAdminLogin()">${t("nav_admin")}</a>
         </div>
       </div>
       <div class="footer-bottom">${t("footer_rights")}</div>
@@ -782,5 +784,62 @@ function showToast(msg, type = "info") {
   setTimeout(() => { el.style.opacity = "0"; setTimeout(() => el.remove(), 250); }, 2800);
 }
 window.showToast = showToast;
+
+
+// ── ADMIN LOGIN MODAL (inline) ─────────────────────────────
+function openAdminLogin() {
+  openModal(`
+    <div class="modal-head">
+      <h3>${t("admin_login")}</h3>
+      <button class="close-btn" onclick="closeModal()">${ICONS.close}</button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--muted); font-size:14px; margin-bottom:18px;">${t("admin_login_sub")}</p>
+      <div class="field">
+        <label>${t("email")}</label>
+        <input id="al_email" type="email" autocomplete="email" dir="ltr" />
+      </div>
+      <div class="field">
+        <label>${t("password")}</label>
+        <input id="al_pw" type="password" autocomplete="current-password" dir="ltr" />
+      </div>
+      <div id="al_err" style="color:var(--danger); font-size:13px; min-height:18px; margin-top:8px;"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">${t("cancel")}</button>
+      <button class="btn btn-primary" id="al_btn" onclick="submitAdminLogin()">${t("sign_in")}</button>
+    </div>
+  `);
+  setTimeout(() => document.getElementById("al_email")?.focus(), 200);
+  // Allow Enter to submit
+  setTimeout(() => {
+    const onEnter = (e) => { if (e.key === "Enter") submitAdminLogin(); };
+    document.getElementById("al_email")?.addEventListener("keydown", onEnter);
+    document.getElementById("al_pw")?.addEventListener("keydown", onEnter);
+  }, 100);
+}
+window.openAdminLogin = openAdminLogin;
+
+async function submitAdminLogin() {
+  const email = document.getElementById("al_email")?.value.trim();
+  const pw    = document.getElementById("al_pw")?.value;
+  const err   = document.getElementById("al_err");
+  const btn   = document.getElementById("al_btn");
+  if (err) err.textContent = "";
+  if (!email || !pw) { if (err) err.textContent = t("fill_required"); return; }
+  if (btn) { btn.disabled = true; btn.innerHTML = `<span class="spinner"></span>`; }
+  try {
+    await Amal.adminLogin(email, pw);
+    closeModal();
+    showToast("✨", "success");
+    // route to admin
+    location.hash = "#admin";
+  } catch (e) {
+    if (err) err.textContent = t("login_failed") + ": " + (e.message || "");
+    if (btn) { btn.disabled = false; btn.textContent = t("sign_in"); }
+  }
+}
+window.submitAdminLogin = submitAdminLogin;
+
 
 window.loadStorefront = loadStorefront;
