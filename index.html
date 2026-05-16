@@ -20,13 +20,12 @@
   <!-- Firebase web config (gitignored real version; example committed). Must load FIRST as a classic script. -->
   <script src="assets/js/firebase-config.js"></script>
 
-  <!-- i18n + UI logic as classic scripts (they only use Amal inside functions, never at top-level). -->
+  <!-- i18n + image utils + UI logic as classic scripts (use Amal only inside functions). -->
   <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/image-utils.js"></script>
   <script src="assets/js/storefront.js"></script>
   <script src="assets/js/admin.js"></script>
 
   <!-- Firebase client is an ES module; it sets window.Amal then app.js starts the router. -->
   <script type="module" src="assets/js/firebase-client.js"></script>
-  <script type="module" src="assets/js/app.js"></script>
-</body>
-</html>
+  <script type="module" src="asse

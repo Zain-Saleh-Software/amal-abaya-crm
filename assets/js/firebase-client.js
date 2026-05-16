@@ -147,7 +147,7 @@ async function logMovement(productId, type, qty, reason, orderId) {
 }
 
 // ---------- Place order (atomic-ish for static site) ----------
-async function placeOrder({ customer, items, shippingFee, paymentProofURL, paymentProofPath, notes }) {
+async function placeOrder({ customer, items, shippingFee, paymentProofDataURL, notes }) {
   // 1. Generate order code
   const code = "AMA-" + Math.random().toString(36).slice(2, 8).toUpperCase();
 
@@ -155,7 +155,9 @@ async function placeOrder({ customer, items, shippingFee, paymentProofURL, payme
   const subtotal = items.reduce((s, it) => s + Number(it.price) * Number(it.quantity), 0);
   const total = subtotal + Number(shippingFee || 0);
 
-  // 3. Create order doc
+  // 3. Create order doc — payment proof is embedded as a base64 data URL.
+  //    The order doc must stay under Firestore's 1 MB limit; compressImage()
+  //    in image-utils.js already caps the proof at ~700 KB.
   const orderId = await createDoc("orders", {
     code,
     customer,
@@ -164,8 +166,7 @@ async function placeOrder({ customer, items, shippingFee, paymentProofURL, payme
     shippingFee: Number(shippingFee) || 0,
     total,
     status: "new",
-    paymentProofURL: paymentProofURL || null,
-    paymentProofPath: paymentProofPath || null,
+    paymentProofURL: paymentProofDataURL || null,  // data:image/jpeg;base64,...
     notes: notes || "",
     courier: null,
     trackingNumber: null
@@ -236,11 +237,4 @@ window.Amal = {
   // storage
   uploadImage, deleteImage,
   // domain
-  getSettings, saveSettings, placeOrder, updateOrderStatus, cancelOrder, logMovement,
-  // raw
-  db, storage,
-  serverTimestamp, increment
-};
-
-// Auto sign-in anonymously so customers can place orders without friction.
-ensureAnonSignedIn();
+  getSettings, saveSettings, placeOrder, updateOrderStatus, cancelOrder, logM

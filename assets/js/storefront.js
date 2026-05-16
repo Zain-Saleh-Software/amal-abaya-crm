@@ -381,13 +381,22 @@ function renderStep3() {
     </div>`;
 }
 
-function onProofSelected(e) {
+async function onProofSelected(e) {
   const f = e.target.files[0];
   if (!f) return;
-  _paymentProofFile = f;
-  const r = new FileReader();
-  r.onload = ev => { _paymentProofPreview = ev.target.result; renderCheckout(); };
-  r.readAsDataURL(f);
+  // Show "compressing..." while we work
+  const zone = document.getElementById("proofZone");
+  if (zone) zone.innerHTML = `<div class="spinner"></div><div style="margin-top:8px;">Compressing…</div>`;
+  try {
+    // Compress to a base64 data URL that fits Firestore's 1 MB doc limit.
+    const dataURL = await compressImage(f, { maxDim: 1200, maxBytes: 650_000, startQuality: 0.8 });
+    _paymentProofFile = f;          // keep original ref for filename (not used anymore)
+    _paymentProofPreview = dataURL; // both preview and what we'll save are the same string
+    renderCheckout();
+  } catch (err) {
+    showToast("Could not process image: " + err.message, "error");
+    renderCheckout();
+  }
 }
 
 function checkoutNext() {
@@ -414,12 +423,7 @@ async function submitOrder() {
     await Amal.ensureAnonSignedIn();
     const s = window.AmalSettings || {};
 
-    // 1. Upload proof
-    const ts = Date.now();
-    const path = `payment-proofs/${ts}_${_paymentProofFile.name.replace(/[^a-z0-9.]/gi, "_")}`;
-    const url = await Amal.uploadImage(path, _paymentProofFile);
-
-    // 2. Place order
+    // Proof is already a compressed base64 data URL (see onProofSelected).
     const res = await Amal.placeOrder({
       customer: _checkoutData,
       items: _cart.map(it => ({
@@ -430,12 +434,11 @@ async function submitOrder() {
         quantity: it.quantity
       })),
       shippingFee: Number(s.shippingFee || 0),
-      paymentProofURL: url,
-      paymentProofPath: path,
+      paymentProofDataURL: _paymentProofPreview,
       notes: _checkoutData.notes
     });
 
-    // 3. Clear cart
+    // Clear cart
     _cart = [];
     saveCart();
     closeModal();
@@ -565,14 +568,4 @@ window.removeCart = removeCart;
 window.startCheckout = startCheckout;
 window.checkoutNext = checkoutNext;
 window.checkoutBack = checkoutBack;
-window.onProofSelected = onProofSelected;
-window.submitOrder = submitOrder;
-window.openAdminLogin = openAdminLogin;
-window.doAdminLogin = doAdminLogin;
-window.closeModal = closeModal;
-window.openModal = openModal;
-window.showToast = showToast;
-window.showLoading = showLoading;
-window.esc = esc;
-window.loadStorefront = loadStorefront;
-window.renderStorefront = renderStorefront;
+wind

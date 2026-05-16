@@ -306,21 +306,25 @@ function openProductForm(id) {
   window._pfImgFile = null;
 }
 
-function onProductImg(e) {
+async function onProductImg(e) {
   const f = e.target.files[0]; if (!f) return;
-  window._pfImgFile = f;
-  const r = new FileReader();
-  r.onload = ev => {
-    window._pfImg = ev.target.result;
-    document.getElementById("pf_imgZone").innerHTML = `<img src="${ev.target.result}">`;
-  };
-  r.readAsDataURL(f);
+  const zone = document.getElementById("pf_imgZone");
+  if (zone) zone.innerHTML = `<div class="spinner"></div><div style="margin-top:8px;">Compressing…</div>`;
+  try {
+    // Compress to base64 data URL that fits inside Firestore (1 MB doc cap)
+    const dataURL = await compressImage(f, { maxDim: 1400, maxBytes: 700_000, startQuality: 0.85 });
+    window._pfImg = dataURL;
+    if (zone) zone.innerHTML = `<img src="${dataURL}">`;
+  } catch (err) {
+    if (zone) zone.innerHTML = `<div style="color:var(--danger);">Image error: ${err.message}</div>`;
+  }
 }
 
 async function saveProduct(id) {
   const btn = document.getElementById("pfSave");
   btn.disabled = true; btn.innerHTML = `<span class="spinner"></span>`;
   try {
+    // Image is already a compressed base64 data URL on window._pfImg
     const data = {
       nameEn: document.getElementById("pf_en").value.trim(),
       nameAr: document.getElementById("pf_ar").value.trim(),
@@ -332,15 +336,8 @@ async function saveProduct(id) {
       lowThreshold: Number(document.getElementById("pf_low").value) || 3,
       sizes:  document.getElementById("pf_sizes").value.trim(),
       colors: document.getElementById("pf_colors").value.trim(),
-      imageURL: window._pfImg || null,
-      imagePath: window._pfImgPath || null
+      imageURL: window._pfImg || null
     };
-
-    if (window._pfImgFile) {
-      const path = `products/${Date.now()}_${window._pfImgFile.name.replace(/[^a-z0-9.]/gi, "_")}`;
-      data.imageURL = await Amal.uploadImage(path, window._pfImgFile);
-      data.imagePath = path;
-    }
 
     if (id) await Amal.updateDocById("products", id, data);
     else    await Amal.createDoc("products", data);
@@ -357,8 +354,6 @@ async function saveProduct(id) {
 async function deleteProduct(id) {
   if (!confirm(t("confirm_delete"))) return;
   try {
-    const p = _data.products.find(x => x.id === id);
-    if (p?.imagePath) await Amal.deleteImage(p.imagePath);
     await Amal.deleteDocById("products", id);
     showToast(t("deleted"), "success");
     loadAdmin();
@@ -952,4 +947,4 @@ window.doAssign = doAssign;
 window.openCourierForm = openCourierForm;
 window.saveCourier = saveCourier;
 window.deleteCourier = deleteCourier;
-window.saveSettings = saveSettings;
+window.saveSettings = s

@@ -3,7 +3,8 @@
 A single-page CRM and storefront for **AMAL ABAYA**, a Palestinian abaya brand. Customers browse the catalog, place orders with bank-transfer proof, and the admin manages the whole pipeline from one dashboard.
 
 - **Frontend:** static HTML/CSS/JS (no build step)
-- **Backend:** Firebase (Firestore + Storage + Auth)
+- **Backend:** Firebase (Firestore + Auth — Storage NOT needed)
+- **Image handling:** Client-side compression to base64 inside Firestore docs (so the whole stack stays on the free Spark plan)
 - **Hosting:** GitHub Pages (free)
 - **Languages:** English + Arabic (full RTL/LTR)
 - **Theme:** Black & gold
@@ -18,8 +19,8 @@ A single-page CRM and storefront for **AMAL ABAYA**, a Palestinian abaya brand. 
 2. In the project dashboard, click the **Web** icon (`</>`) to register a web app. Copy the `firebaseConfig` object that's shown.
 3. Enable these services from the left sidebar:
    - **Authentication** → Sign-in method → enable **Email/Password** and **Anonymous**.
-   - **Firestore Database** → Create database → Start in **production mode**, pick a region near Palestine (e.g. `europe-west1`).
-   - **Storage** → Get started → start in **production mode**, same region.
+   - **Firestore Database** → Create database → Start in **production mode**, pick a region (e.g. `nam5 (us-central)` or `us-east1` — these are free; europe regions also free for Firestore but now require Blaze for the default Storage bucket, which we don't use anyway).
+   - **Storage:** NOT NEEDED — images are compressed client-side and embedded as base64 inside Firestore documents.
 
 ### 2. Paste your Firebase config
 
@@ -38,7 +39,7 @@ Open `assets/js/firebase-config.js` and replace each `PASTE_YOUR_*` placeholder 
 In the Firebase console:
 
 - **Firestore → Rules** → paste the contents of [`firebase/firestore.rules`](firebase/firestore.rules) → **Publish**.
-- **Storage → Rules** → paste the contents of [`firebase/storage.rules`](firebase/storage.rules) → **Publish**.
+- Storage rules: skip — Storage isn't used.
 
 ### 4. Create the admin user
 
@@ -131,9 +132,4 @@ Stock is decremented automatically when the order is placed and restored if the 
 ## Limitations / honest notes
 
 - **Stock concurrency:** stock decrement on order placement is best-effort, not a transaction. Under heavy concurrent traffic two customers could oversell. Fine for early-stage volume; if you grow, move `placeOrder` to a Firebase Cloud Function with a Firestore transaction.
-- **Anonymous order writes:** anyone can `POST` an order doc (that's how customer checkout works). Firestore rules constrain the shape (`status: 'new'`, numeric total) but not abuse. If you start getting spam orders, enable Firebase App Check.
-- **Free-tier limits:** Firebase Spark plan gives 1 GB Firestore / 5 GB Storage / 50k auth users / 10 GB egress per month. Generous for a starting shop. Monitor usage in the Firebase console.
-
-## License
-
-MIT — see [LICENSE](LICENSE).
+- **Anonymous order writes:** anyone can `POST` an order doc (that's how customer checkout works). Firestore rules constrain the shape (`status: 'new'`, numeric total) but not abuse. If you start getting spam orders, enable Firebas
