@@ -48,7 +48,7 @@ function renderStorefront() {
       <h1>${t("hero_title")}</h1>
       <p>${t("hero_sub")}</p>
       <button class="btn btn-primary" onclick="document.getElementById('collection').scrollIntoView({behavior:'smooth'})">
-        ${t("shop_now")} →
+        ${t("shop_now")} <span class="arrow">→</span>
       </button>
     </section>
 
@@ -320,7 +320,7 @@ function renderStep1() {
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
       <button class="btn" onclick="closeModal()">${t("cancel")}</button>
-      <button class="btn btn-primary" onclick="checkoutNext()">${t("next")} →</button>
+      <button class="btn btn-primary" onclick="checkoutNext()">${t("next")} <span class="arrow">→</span></button>
     </div>`;
 }
 
@@ -344,8 +344,8 @@ function renderStep2() {
       <input type="file" id="co_proof" accept="image/*" style="display:none;" onchange="onProofSelected(event)">
     </div>
     <div style="display:flex;gap:10px;justify-content:space-between;margin-top:20px;">
-      <button class="btn" onclick="checkoutBack()">← ${t("back")}</button>
-      <button class="btn btn-primary" onclick="checkoutNext()">${t("next")} →</button>
+      <button class="btn" onclick="checkoutBack()"><span class="arrow">←</span> ${t("back")}</button>
+      <button class="btn btn-primary" onclick="checkoutNext()">${t("next")} <span class="arrow">→</span></button>
     </div>`;
 }
 
@@ -382,7 +382,7 @@ function renderStep3() {
         <img src="${_paymentProofPreview}" style="max-width:100%;max-height:200px;border-radius:8px;">
       </div>` : ""}
     <div style="display:flex;gap:10px;justify-content:space-between;margin-top:20px;">
-      <button class="btn" onclick="checkoutBack()">← ${t("back")}</button>
+      <button class="btn" onclick="checkoutBack()"><span class="arrow">←</span> ${t("back")}</button>
       <button class="btn btn-primary" id="confirmBtn" onclick="submitOrder()">${t("confirm_order")}</button>
     </div>`;
 }
