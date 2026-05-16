@@ -32,8 +32,8 @@ const TRANSLATIONS = {
 
     // Hero
     hero_eyebrow:       "AMAL ABAYAS  •  عبايات أمل",
-    hero_title:         "عبايات وأكثر تجدينها لدى",
-    hero_title_gold:    "عبايات أمل",
+    hero_title:         "أناقة لا تُنسى . . فخامة",
+    hero_title_gold:    "تليق بكِ",
     hero_sub:           "عبايات صُمّمت واختيرت بعناية من الإمارات، لتصل إليكِ في غزة.",
     shop_now:           "تسوّقي الآن",
     contact_us:         "تواصلي معنا",
@@ -236,8 +236,8 @@ const TRANSLATIONS = {
     checkout:           "Checkout",
     continue_shopping:  "Continue shopping",
     hero_eyebrow:       "AMAL ABAYAS  •  عبايات أمل",
-    hero_title:         "Abayas and more — found at",
-    hero_title_gold:    "Amal Abayas",
+    hero_title:         "Unforgettable elegance . . luxury that",
+    hero_title_gold:    "befits you",
     hero_sub:           "Abayas designed and selected with care from the UAE, delivered to you in Gaza.",
     shop_now:           "Shop Now",
     contact_us:         "Contact Us",
