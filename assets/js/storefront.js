@@ -120,19 +120,26 @@ function renderHeader() {
 
 function renderHero() {
   const s = window.AmalSettings || {};
-  // If admin uploaded a banner image, show it on top
-  const bannerHTML = s.bannerURL
-    ? `<img class="hero-banner-image" src="${s.bannerURL}" alt="${esc(t("brand"))}">`
-    : "";
+  const lang = getLang();
+  // Black dramatic banner with the full logo. If admin uploaded a banner image, use that instead.
+  const bannerBlock = s.bannerURL
+    ? `<div class="hero-banner-wrap"><img class="hero-banner-image" src="${s.bannerURL}" alt="${esc(t("brand"))}"></div>`
+    : `<div class="hero-banner-wrap hero-banner-wrap--logo">
+         <img class="hero-banner-logo" src="assets/img/logo.svg" alt="${esc(t("brand"))}" />
+       </div>`;
   return `
-    <section class="hero hero-compact" id="top">
-      ${bannerHTML}
-      <div class="hero-inner">
-        <h1>${t("hero_title_1")} <em>${t("hero_title_2")}</em> ${t("hero_title_3")}</h1>
-        <p>${t("hero_sub")}</p>
+    <section class="hero hero-editorial" id="top">
+      ${bannerBlock}
+      <div class="hero-content">
+        <div class="hero-rule"><span></span></div>
+        <h1 class="hero-headline">
+          <span class="hl-line-1">${t("hero_title_1")} <em>${t("hero_title_2")}</em></span>
+          <span class="hl-line-2">${t("hero_title_3")}</span>
+        </h1>
+        <p class="hero-sub">${t("hero_sub")}</p>
         <div class="hero-cta">
-          <button class="btn btn-primary" onclick="scrollToId('collection')">${t("shop_now")} <span class="arrow">→</span></button>
-          <button class="btn" onclick="scrollToId('contact')">${t("nav_contact")}</button>
+          <button class="btn btn-primary btn-lg" onclick="scrollToId('collection')">${t("shop_now")} <span class="arrow">${lang==='ar'?'←':'→'}</span></button>
+          <button class="btn btn-ghost btn-lg" onclick="scrollToId('contact')">${t("nav_contact")}</button>
         </div>
       </div>
     </section>`;
@@ -213,14 +220,15 @@ function renderCollection(s) {
     ? _products
     : _products.filter(p => (p.category || "") === _activeCategory);
   return `
-    <section class="section" id="collection">
-      <div class="section-head">
-        <h2 class="section-title">${t("our_collection")}</h2>
+    <section class="section section-collection" id="collection">
+      <div class="section-head section-head--center">
+        <div class="section-eyebrow">— ${esc(t("brand")||"AMAL")} —</div>
+        <h2 class="section-title section-title--xl">${t("our_collection")}</h2>
         <p class="section-sub">${t("collection_sub")}</p>
       </div>
-      <div class="cat-filter" id="catFilter">
-        ${cats.map(c => `<button class="cat-pill ${_activeCategory===c.id?'active':''}" onclick="setCategory('${c.id}')">${esc(c.label)}</button>`).join("")}
-      </div>
+      <nav class="cat-tabs" id="catFilter" aria-label="Categories">
+        ${cats.map(c => `<button class="cat-tab ${_activeCategory===c.id?'active':''}" onclick="setCategory('${c.id}')"><span class="cat-tab-label">${esc(c.label)}</span></button>`).join("")}
+      </nav>
       <div class="product-grid" id="productGrid">
         ${visible.length ? visible.map(productCard).join("") :
           `<div class="empty" style="grid-column: 1/-1;">
@@ -629,17 +637,19 @@ function productCard(p) {
   const firstImg = (Array.isArray(p.images) && p.images[0]?.url) || p.imageURL || null;
 
   return `
-    <article class="product-card" onclick="openProduct('${p.id}')">
-      <div class="product-img" style="position:relative;">
+    <article class="product-card pc-editorial" onclick="openProduct('${p.id}')">
+      <figure class="pc-figure">
         ${hasDiscount ? `<div class="discount-badge">${esc(badgeLabel)}</div>` : ""}
-        ${firstImg ? `<img src="${firstImg}" alt="${esc(name)}">` : ICONS.abayaSilhouette}
-      </div>
-      <div class="product-info">
-        <h3 class="product-name">${esc(name)}</h3>
-        <div class="product-desc">${esc(desc)}</div>
-        <div class="product-meta">
-          <div class="product-price">${priceHTML}</div>
-          <div class="product-stock ${stockClass}">${stockLabel}</div>
+        ${stock <= 0 ? `<div class="soldout-overlay">${t("out_of_stock")}</div>` : ""}
+        <div class="pc-image-wrap">
+          ${firstImg ? `<img class="pc-image" src="${firstImg}" alt="${esc(name)}" loading="lazy">` : `<div class="pc-image pc-image--placeholder">${ICONS.abayaSilhouette}</div>`}
+        </div>
+      </figure>
+      <div class="pc-info">
+        <h3 class="pc-name">${esc(name)}</h3>
+        ${desc ? `<div class="pc-desc">${esc(desc)}</div>` : ""}
+        <div class="pc-meta">
+          <div class="pc-price">${priceHTML}</div>
         </div>
       </div>
     </article>`;
