@@ -17,7 +17,7 @@
 <body dir="ltr">
   <div id="app"></div>
 
-  <!-- Firebase web config (gitignored real version; example committed). Must load FIRST as a classic script. -->
+  <!-- Firebase web config. Must load FIRST as a classic script. -->
   <script src="assets/js/firebase-config.js"></script>
 
   <!-- i18n + image utils + UI logic as classic scripts (use Amal only inside functions). -->
@@ -28,4 +28,6 @@
 
   <!-- Firebase client is an ES module; it sets window.Amal then app.js starts the router. -->
   <script type="module" src="assets/js/firebase-client.js"></script>
-  <script type="module" src="asse
+  <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>
