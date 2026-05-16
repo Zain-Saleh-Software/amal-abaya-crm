@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 80" role="img" aria-label="Amal">
+  <style>
+    .amal { font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif; font-style: italic; font-weight: 600; fill: currentColor; }
+    .cmark{ font-family: "Inter", system-ui, sans-serif; font-size: 8px; fill: currentColor; }
+  </style>
+  <text class="cmark" x="46" y="22" text-anchor="middle">©</text>
+  <text class="amal" x="110" y="62" text-anchor="middle" font-size="72">Amal</text>
+</svg>

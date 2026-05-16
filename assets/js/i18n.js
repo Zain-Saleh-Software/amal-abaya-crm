@@ -4,8 +4,8 @@
 
 const TRANSLATIONS = {
   en: {
-    brand: "AMAL ABAYA",
-    tagline: "Heritage in every thread",
+    brand: "AMAL ABAYAS",
+    tagline: "Abaya and more",
     hero_tag: "SS 2026 COLLECTION",
     hero_eyebrow: "EST. PALESTINE",
     hero_title_1: "Timeless",
@@ -174,8 +174,8 @@ const TRANSLATIONS = {
     nav_contact: "Contact",
 
     // Footer
-    footer_about: "AMAL ABAYA",
-    footer_about_desc: "Hand-sewn abayas and modest wear, made with care in Palestine. Heritage in every thread.",
+    footer_about: "AMAL ABAYAS",
+    footer_about_desc: "Hand-sewn abayas and modest wear, made with care in Palestine. Abaya and more.",
     footer_shop: "Shop",
     footer_help: "Help",
     footer_company: "Company",
@@ -336,8 +336,8 @@ const TRANSLATIONS = {
   },
 
   ar: {
-    brand: "أمل عباية",
-    tagline: "تراث في كل خيط",
+    brand: "عبايات أمل",
+    tagline: "عبايات وأكثر",
     hero_tag: "مجموعة ربيع/صيف ٢٠٢٦",
     hero_eyebrow: "تأسست في فلسطين",
     hero_title_1: "أناقة",
@@ -506,8 +506,8 @@ const TRANSLATIONS = {
     nav_contact: "تواصل",
 
     // Footer
-    footer_about: "أمل عباية",
-    footer_about_desc: "عبايات وملابس محتشمة مخيطة يدوياً بعناية في فلسطين. تراث في كل خيط.",
+    footer_about: "عبايات أمل",
+    footer_about_desc: "عبايات وملابس محتشمة مخيطة يدوياً بعناية في فلسطين. عبايات وأكثر.",
     footer_shop: "تسوّقي",
     footer_help: "مساعدة",
     footer_company: "الشركة",

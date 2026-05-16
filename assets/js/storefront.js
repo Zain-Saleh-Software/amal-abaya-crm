@@ -62,10 +62,10 @@ function renderStorefront() {
   app.innerHTML = renderAnnouncement()
     + renderHeader()
     + renderHero()
+    + renderCollection(s)
     + renderAboutAbaya()
     + renderStats()
     + renderTypes()
-    + renderCollection(s)
     + renderHeritage()
     + renderFabrics()
     + renderOccasions()
@@ -99,7 +99,9 @@ function renderHeader() {
           <a class="nav-link" href="#fabrics" onclick="scrollToId('fabrics',event)">${t("nav_fabrics")}</a>
           <a class="nav-link" href="#contact" onclick="scrollToId('contact',event)">${t("nav_contact")}</a>
         </nav>
-        <a href="#top" onclick="scrollToTop(event)" class="brand-link"><div class="brand">${t("brand")}</div></a>
+        <a href="#top" onclick="scrollToTop(event)" class="brand-link" aria-label="${t("brand")}">
+          <img class="logo-img" src="assets/img/logo-wordmark.svg" alt="${t("brand")}" />
+        </a>
         <div class="header-actions">
           <button class="lang-toggle" onclick="toggleLang()" aria-label="toggle language">${getLang() === "en" ? "العربية" : "English"}</button>
           <button class="cart-btn" onclick="openCart()" aria-label="cart">
@@ -117,18 +119,16 @@ function renderHeader() {
 function renderHero() {
   const s = window.AmalSettings || {};
   return `
-    <section class="hero" id="top">
-      <div class="hero-bg-silhouette">${ICONS.abayaSilhouette}</div>
+    <section class="hero hero-compact" id="top">
       <div class="hero-inner">
         <div class="hero-eyebrow">${esc(s.collectionTag || t("hero_eyebrow"))}</div>
-        <h1>${t("hero_title_1")} <em>${t("hero_title_2")}</em><br>${t("hero_title_3")}</h1>
+        <h1>${t("hero_title_1")} <em>${t("hero_title_2")}</em> ${t("hero_title_3")}</h1>
         <p>${t("hero_sub")}</p>
         <div class="hero-cta">
           <button class="btn btn-primary" onclick="scrollToId('collection')">${t("shop_now")} <span class="arrow">→</span></button>
-          <button class="btn" onclick="scrollToId('about-abaya')">${t("explore_story")}</button>
+          <button class="btn" onclick="scrollToId('contact')">${t("nav_contact")}</button>
         </div>
       </div>
-      <div class="scroll-hint">${t("scroll_explore")}</div>
     </section>`;
 }
 
@@ -445,7 +445,7 @@ function renderFooter(s) {
     <footer class="site-footer" id="footer">
       <div class="footer-grid">
         <div class="footer-brand">
-          <div class="brand">${t("brand")}</div>
+          <a href="#top" onclick="scrollToTop(event)" class="brand-link"><img class="logo-img" src="assets/img/logo-wordmark.svg" alt="${t("brand")}" /></a>
           <p>${t("footer_about_desc")}</p>
           <div class="footer-socials">
             <a href="https://instagram.com/${insta}" target="_blank" aria-label="Instagram">${ICONS.insta}</a>
@@ -1062,7 +1062,7 @@ function showLoading(on) {
       l.id = "loading";
       l.className = "loading-screen";
       l.innerHTML = `
-        <div class="brand">AMAL ABAYA</div>
+        <img class="logo-img" style="height:42px;width:auto;" src="assets/img/logo-wordmark.svg" alt="AMAL ABAYAS"/>
         <div class="spinner"></div>
         <div class="label">LOADING…</div>`;
       document.body.appendChild(l);
