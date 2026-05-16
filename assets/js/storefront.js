@@ -115,7 +115,6 @@ function renderStorefront() {
   const app = document.getElementById("app");
   const s = window.AmalSettings || {};
   app.innerHTML = `
-    ${renderPromo()}
     ${renderHeader()}
     ${renderHero()}
     ${renderFeatures()}
@@ -129,9 +128,6 @@ function renderStorefront() {
 }
 window.renderCurrentView = renderStorefront;
 
-function renderPromo() {
-  return `<div class="promo-strip">${esc(t("promo"))}</div>`;
-}
 
 function renderHeader() {
   const count = cartCount();
