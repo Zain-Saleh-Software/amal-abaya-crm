@@ -23,7 +23,7 @@
   --maxw:      1280px;
   --t:         .35s cubic-bezier(.2,.7,.2,1);
 
-  --ff-display-ar: "Cairo", "Tajawal", system-ui, sans-serif;
+  --ff-display-ar: "Tajawal", "Cairo", system-ui, sans-serif;
   --ff-body-ar:    "Tajawal", "Cairo", system-ui, sans-serif;
 }
 
