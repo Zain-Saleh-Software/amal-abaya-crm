@@ -145,10 +145,7 @@ function renderHeader() {
           <a class="nav-link" href="#about" onclick="scrollToId('about',event)">${t("nav_about")}</a>
           <a class="nav-link" href="#contact" onclick="scrollToId('contact',event)">${t("nav_contact")}</a>
         </nav>
-        <a href="#top" class="brand-mark" onclick="scrollToId('top',event)">
-          ${t("brand")}
-          <span class="sub">${t("brand_sub")}</span>
-        </a>
+        <a href="#top" class="brand-mark" onclick="scrollToId('top',event)">عبايات <span>أمل</span></a>
         <div class="nav-right">
           <button class="lang-btn" onclick="toggleLang()">${getLang() === "ar" ? "EN" : "عربي"}</button>
           <button class="icon-btn cart-btn" onclick="openCart()">
@@ -290,17 +287,17 @@ function productCard(p) {
 
 function renderFeatures() {
   const items = [
-    { icon: ICONS.sparkle, t_t: "promise_qual_t", t_s: "promise_qual_s" },
-    { icon: ICONS.truck,   t_t: "promise_ship_t", t_s: "promise_ship_s" },
-    { icon: ICONS.chat,    t_t: "promise_wa_t",   t_s: "promise_wa_s" },
+    { emoji: "✨", title: t("feat_design_t"),  sub: t("feat_design_s") },
+    { emoji: "🚚", title: t("feat_ship_t"),    sub: t("feat_ship_s") },
+    { emoji: "💳", title: t("feat_cod_t"),     sub: t("feat_cod_s") },
   ];
   return `
     <section class="features">
       ${items.map(i => `
         <div class="feature">
-          <div class="icon">${i.icon}</div>
-          <h4>${t(i.t_t)}</h4>
-          <p>${t(i.t_s)}</p>
+          <div class="icon">${i.emoji}</div>
+          <h4>${i.title}</h4>
+          <p>${i.sub}</p>
         </div>
       `).join("")}
     </section>

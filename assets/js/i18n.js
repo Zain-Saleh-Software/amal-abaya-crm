@@ -474,3 +474,25 @@ window.esc = esc;
 
 // Apply initial lang
 setLang(CURRENT_LANG);
+
+// ── Template-matched feature strings ───────────────────────
+const _featStrings = {
+  ar: {
+    feat_design_t: "تصاميم حصرية",
+    feat_design_s: "قطع محدودة لا تُكرَّر، تطريز يدوي وخامات مختارة بعناية.",
+    feat_ship_t:   "توصيل لكل غزة",
+    feat_ship_s:   "غزة، خان يونس، رفح، الوسطى، والشمال — بأسرع وقت ممكن.",
+    feat_cod_t:    "الدفع عند الاستلام",
+    feat_cod_s:    "اطلبي براحتك، وادفعي نقداً عند وصول طلبك إلى باب المنزل.",
+  },
+  en: {
+    feat_design_t: "Exclusive designs",
+    feat_design_s: "Limited, hand-embroidered pieces with carefully chosen fabrics.",
+    feat_ship_t:   "Delivery across Gaza",
+    feat_ship_s:   "Gaza, Khan Yunis, Rafah, central, and northern — fastest possible.",
+    feat_cod_t:    "Cash on delivery",
+    feat_cod_s:    "Order with ease, pay cash when your order arrives at your door.",
+  }
+};
+Object.assign(TRANSLATIONS.ar, _featStrings.ar);
+Object.assign(TRANSLATIONS.en, _featStrings.en);

@@ -1103,3 +1103,35 @@ body.theme-luxury .upload-zone:hover { border-color: var(--gold-soft); color: va
 }
 .login-card .sub { text-align: center; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
 .login-card .field input { background: #0c0c0c; }
+
+/* ── Brand mark: single-line "عبايات أمل" match template ── */
+.brand-mark {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  background: linear-gradient(135deg, var(--gold-2), var(--gold), var(--gold-soft));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1;
+  white-space: nowrap;
+  margin-top: 0;
+}
+.brand-mark span {
+  color: var(--text);
+  -webkit-text-fill-color: var(--text);
+  font-weight: 500;
+}
+@media (max-width: 880px) { .brand-mark { font-size: 22px; } }
+
+/* Feature icons — emoji emphasis */
+.features .feature .icon {
+  font-size: 30px;
+  color: var(--gold);
+  margin-bottom: 8px;
+  display: block;
+  line-height: 1;
+}
