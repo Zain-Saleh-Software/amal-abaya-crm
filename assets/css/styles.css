@@ -2141,3 +2141,324 @@ body { background: #fff !important; color: #000 !important; }
   align-items: center;
 }
 .image-card img { width: 80px; height: 80px; object-fit: cover; border-radius: 2px; }
+
+/* ===========================================================
+   Visual redesign — editorial fashion-house polish
+   (keeps the B&W palette, lifts the layout)
+   =========================================================== */
+
+/* ── Typography scale ─────────────────────────────────────── */
+:root {
+  --display-1: clamp(56px, 9vw, 132px);
+  --display-2: clamp(38px, 6vw, 72px);
+  --display-3: clamp(28px, 4vw, 44px);
+  --body-lg:   clamp(16px, 1.6vw, 19px);
+  --eyebrow:   12px;
+}
+
+body { font-family: var(--ff-body); color: #000; background: #fff; -webkit-font-smoothing: antialiased; }
+
+/* ── Hero — dramatic editorial split ─────────────────────── */
+.hero.hero-editorial {
+  background: #fff !important;
+  color: #000 !important;
+  padding: 0 0 clamp(56px, 8vw, 120px);
+  border-bottom: 1px solid var(--hairline);
+  display: block;
+  text-align: center;
+  position: relative;
+}
+.hero.hero-editorial .hero-banner-wrap {
+  background: #000;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(40px, 7vw, 96px) 24px;
+  min-height: 360px;
+}
+.hero.hero-editorial .hero-banner-wrap--logo .hero-banner-logo {
+  width: min(72%, 720px);
+  height: auto;
+  display: block;
+}
+.hero.hero-editorial .hero-banner-image {
+  width: 100%;
+  max-height: 720px;
+  object-fit: cover;
+  display: block;
+}
+.hero.hero-editorial .hero-content {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: clamp(36px, 5vw, 72px) 24px 0;
+}
+.hero.hero-editorial .hero-rule {
+  display: flex; justify-content: center;
+  margin-bottom: 28px;
+}
+.hero.hero-editorial .hero-rule span {
+  display: block; width: 60px; height: 1px; background: #000;
+}
+.hero.hero-editorial .hero-headline {
+  font-family: var(--ff-display);
+  font-weight: 500;
+  font-size: var(--display-2);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: #000;
+  margin: 0 0 18px;
+}
+.hero.hero-editorial .hero-headline .hl-line-1,
+.hero.hero-editorial .hero-headline .hl-line-2 {
+  display: block;
+}
+.hero.hero-editorial .hero-headline em {
+  font-style: italic;
+  font-weight: 400;
+}
+[dir="rtl"] .hero.hero-editorial .hero-headline {
+  font-family: 'Markazi Text', 'Tajawal', 'Cairo', serif;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.15;
+}
+.hero.hero-editorial .hero-sub {
+  font-family: var(--ff-body);
+  font-size: var(--body-lg);
+  color: #555;
+  max-width: 600px;
+  margin: 0 auto 32px;
+  line-height: 1.55;
+}
+[dir="rtl"] .hero.hero-editorial .hero-sub {
+  font-family: 'Tajawal', 'Cairo', sans-serif;
+  font-size: clamp(16px, 1.7vw, 20px);
+}
+.hero.hero-editorial .hero-cta {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Bigger buttons */
+.btn.btn-lg {
+  padding: 16px 32px;
+  font-size: 14px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  border-radius: 0;
+  font-weight: 600;
+  border: 1px solid #000;
+  transition: all 0.18s ease;
+}
+.btn.btn-lg.btn-primary { background: #000; color: #fff; }
+.btn.btn-lg.btn-primary:hover { background: #fff; color: #000; }
+.btn.btn-lg.btn-ghost { background: transparent; color: #000; }
+.btn.btn-lg.btn-ghost:hover { background: #000; color: #fff; }
+.btn.btn-lg .arrow { margin-inline-start: 8px; display: inline-block; transition: transform 0.2s; }
+.btn.btn-lg:hover .arrow { transform: translateX(4px); }
+[dir="rtl"] .btn.btn-lg:hover .arrow { transform: translateX(-4px); }
+
+/* ── Section heads — editorial ──────────────────────────── */
+.section { padding: clamp(72px, 9vw, 140px) 24px; max-width: 1280px; margin: 0 auto; }
+.section-head { margin-bottom: clamp(40px, 5vw, 72px); }
+.section-head--center { text-align: center; }
+.section-eyebrow {
+  font-family: var(--ff-body);
+  font-size: var(--eyebrow);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #555;
+  margin-bottom: 18px;
+}
+.section-title {
+  font-family: var(--ff-display);
+  font-weight: 500;
+  line-height: 1.0;
+  letter-spacing: -0.01em;
+  color: #000;
+  margin: 0;
+}
+.section-title--xl {
+  font-size: var(--display-2);
+}
+[dir="rtl"] .section-title {
+  font-family: 'Markazi Text', 'Tajawal', 'Cairo', serif;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.15;
+}
+.section-sub {
+  font-family: var(--ff-body);
+  font-size: var(--body-lg);
+  color: #555;
+  max-width: 620px;
+  margin: 18px auto 0;
+  line-height: 1.6;
+}
+
+/* ── Category tabs (underlined) ─────────────────────────── */
+.cat-tabs {
+  display: flex; gap: clamp(18px, 3vw, 42px);
+  flex-wrap: wrap;
+  justify-content: center;
+  border-bottom: 1px solid var(--hairline);
+  padding: 0 16px clamp(20px, 2vw, 28px);
+  margin-bottom: clamp(40px, 5vw, 64px);
+}
+.cat-tab {
+  background: none;
+  border: none;
+  padding: 6px 2px;
+  position: relative;
+  cursor: pointer;
+  color: #555;
+  font-family: var(--ff-body);
+  font-size: 13px;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: color 0.18s ease;
+}
+[dir="rtl"] .cat-tab {
+  font-family: 'Tajawal', 'Cairo', sans-serif;
+  font-size: 15px;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+.cat-tab::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 2px;
+  background: #000;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.22s ease;
+}
+.cat-tab:hover { color: #000; }
+.cat-tab.active { color: #000; }
+.cat-tab.active::after { transform: scaleX(1); }
+
+/* ── Product grid + cards ───────────────────────────────── */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: clamp(24px, 3vw, 48px) clamp(16px, 2vw, 28px);
+}
+.pc-editorial {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.25s ease;
+}
+.pc-editorial:hover { transform: translateY(-2px); }
+.pc-figure {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background: #fafafa;
+  overflow: hidden;
+  margin: 0 0 18px;
+}
+.pc-image-wrap {
+  width: 100%; height: 100%;
+  display: block;
+  overflow: hidden;
+}
+.pc-image {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(.2,.7,.2,1);
+  display: block;
+}
+.pc-image--placeholder {
+  display: flex; align-items: center; justify-content: center;
+  color: #c5c5c5;
+}
+.pc-image--placeholder svg { width: 50%; height: 70%; }
+.pc-editorial:hover .pc-image { transform: scale(1.04); }
+.pc-info { text-align: center; padding: 0 8px; }
+.pc-name {
+  font-family: var(--ff-display);
+  font-weight: 500;
+  font-size: clamp(18px, 1.6vw, 22px);
+  line-height: 1.25;
+  margin: 0 0 6px;
+  color: #000;
+  letter-spacing: 0.2px;
+}
+[dir="rtl"] .pc-name {
+  font-family: 'Markazi Text', 'Tajawal', serif;
+  font-size: clamp(20px, 1.8vw, 24px);
+  font-weight: 600;
+}
+.pc-desc {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 10px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.pc-meta { display: flex; justify-content: center; align-items: baseline; gap: 8px; }
+.pc-price {
+  font-family: var(--ff-body);
+  font-size: 14px;
+  letter-spacing: 1.2px;
+  color: #000;
+  font-weight: 600;
+}
+.discount-badge {
+  z-index: 2;
+  padding: 5px 12px;
+  font-size: 10px;
+  letter-spacing: 1.6px;
+}
+.soldout-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.78);
+  color: #000;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-body);
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* ── Refinement: smaller grids & spacing on mobile ──────── */
+@media (max-width: 720px) {
+  .section { padding: 56px 18px; }
+  .product-grid { grid-template-columns: repeat(2, 1fr); gap: 22px 14px; }
+  .pc-name { font-size: 15px; }
+  .pc-desc { display: none; }
+  .hero.hero-editorial .hero-banner-wrap { min-height: 220px; padding: 36px 16px; }
+  .hero.hero-editorial .hero-banner-wrap--logo .hero-banner-logo { width: 88%; }
+  .cat-tabs { gap: 14px; padding-bottom: 16px; }
+  .cat-tab { font-size: 11px; letter-spacing: 1.6px; }
+  [dir="rtl"] .cat-tab { font-size: 13px; }
+}
+
+/* ── Footer, contact, header: tighter rhythm ────────────── */
+.store-header { padding: 14px 0; }
+.store-header-inner { padding: 0 clamp(20px, 3vw, 40px); }
+.logo-img--header { height: 52px; }
+@media (max-width: 720px) { .logo-img--header { height: 40px; } }
+
+/* Old hero overrides — kill any legacy dark hero background */
+.hero, .hero-compact { background: #fff; color: #000; }
+.hero h1, .hero p { color: inherit; }
+.hero .hero-eyebrow { color: #777; }
+
+/* Misc text recolors that may have been baked-in from the dark theme */
+h1, h2, h3, h4, h5, h6 { color: #000; }
+p, span, li, a { color: inherit; }
+a:not(.btn) { color: #000; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
+a:not(.btn):hover { border-bottom-color: #000; }
