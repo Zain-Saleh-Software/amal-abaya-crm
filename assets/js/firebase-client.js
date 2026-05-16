@@ -237,4 +237,11 @@ window.Amal = {
   // storage
   uploadImage, deleteImage,
   // domain
-  getSettings, saveSettings, placeOrder, updateOrderStatus, cancelOrder, logM
+  getSettings, saveSettings, placeOrder, updateOrderStatus, cancelOrder, logMovement,
+  // raw
+  db, storage,
+  serverTimestamp, increment
+};
+
+// Auto sign-in anonymously so customers can place orders without friction.
+ensureAnonSignedIn();

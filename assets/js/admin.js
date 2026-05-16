@@ -947,4 +947,4 @@ window.doAssign = doAssign;
 window.openCourierForm = openCourierForm;
 window.saveCourier = saveCourier;
 window.deleteCourier = deleteCourier;
-window.saveSettings = s
+window.saveSettings = saveSettings;

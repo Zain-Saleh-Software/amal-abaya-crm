@@ -509,7 +509,21 @@ async function doAdminLogin() {
     showToast("Welcome back", "success");
     window.location.hash = "#admin";
   } catch (e) {
-    showToast(t("wrong_pin"), "error");
+    // Surface the actual Firebase auth error so the admin can fix the cause
+    const code = (e && e.code) || "";
+    const map = {
+      "auth/wrong-password":       "Wrong password",
+      "auth/invalid-credential":   "Wrong email or password",
+      "auth/user-not-found":       "No account with that email",
+      "auth/invalid-email":        "Invalid email format",
+      "auth/too-many-requests":    "Too many tries — wait a few minutes",
+      "auth/unauthorized-domain":  "This domain is not authorized in Firebase Auth settings",
+      "auth/operation-not-allowed":"Email/Password sign-in is disabled in Firebase",
+      "auth/network-request-failed":"Network error — check connection"
+    };
+    const msg = map[code] || (code ? code : (e.message || t("wrong_pin")));
+    console.error("[AMAL] login failed:", code, e.message);
+    showToast(msg, "error");
     btn.disabled = false; btn.textContent = t("login");
   }
 }
@@ -537,36 +551,4 @@ function closeModal() {
 }
 
 function showToast(msg, type = "") {
-  const el = document.createElement("div");
-  el.className = "toast " + type;
-  el.textContent = msg;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 3000);
-}
-
-function showLoading(on) {
-  let l = document.getElementById("loading");
-  if (on) {
-    if (!l) {
-      l = document.createElement("div");
-      l.id = "loading";
-      l.className = "loading-screen";
-      l.innerHTML = `
-        <div class="brand">AMAL ABAYA</div>
-        <div class="spinner"></div>
-        <div class="label">LOADING…</div>`;
-      document.body.appendChild(l);
-    }
-  } else {
-    if (l) l.remove();
-  }
-}
-
-window.openCart = openCart;
-window.closeCart = closeCart;
-window.openProduct = openProduct;
-window.addToCart = addToCart;
-window.adjCart = adjCart;
-window.removeCart = removeCart;
-window.startCheckout = startCheckout;
-window.checkoutNe
+  const el = 
