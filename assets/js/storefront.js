@@ -551,7 +551,10 @@ function showLoading(on) {
       l = document.createElement("div");
       l.id = "loading";
       l.className = "loading-screen";
-      l.innerHTML = `<div class="brand">${t("brand")}</div><div class="spinner"></div>`;
+      l.innerHTML = `
+        <div class="brand">AMAL ABAYA</div>
+        <div class="spinner"></div>
+        <div class="label">LOADING…</div>`;
       document.body.appendChild(l);
     }
   } else {
@@ -566,6 +569,4 @@ window.addToCart = addToCart;
 window.adjCart = adjCart;
 window.removeCart = removeCart;
 window.startCheckout = startCheckout;
-window.checkoutNext = checkoutNext;
-window.checkoutBack = checkoutBack;
-wind
+window.checkoutNe

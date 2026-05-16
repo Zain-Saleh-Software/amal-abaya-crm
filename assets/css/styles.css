@@ -115,10 +115,14 @@ input::placeholder, textarea::placeholder { color: var(--text-mute); }
   font-size: 26px;
   letter-spacing: 6px;
   font-weight: 600;
+  color: var(--gold);                       /* visible fallback */
   background: linear-gradient(135deg, #fff, var(--gold));
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
+  -webkit-text-fill-color: transparent;     /* lets gradient show in webkit */
+}
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .brand { -webkit-text-fill-color: var(--gold); color: var(--gold); }
 }
 .header-actions { display: flex; gap: 8px; align-items: center; }
 .lang-toggle {
@@ -178,11 +182,15 @@ input::placeholder, textarea::placeholder { color: var(--text-mute); }
   font-size: clamp(40px, 6vw, 72px);
   font-weight: 500;
   line-height: 1.1;
+  color: #fff;                              /* visible fallback */
   background: linear-gradient(160deg, #fff 30%, var(--gold) 90%);
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
+  -webkit-text-fill-color: transparent;
   margin-bottom: 18px;
+}
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero h1 { -webkit-text-fill-color: #fff; color: #fff; }
 }
 .hero p { color: var(--text-dim); max-width: 560px; margin: 0 auto 28px; font-size: 17px; }
 
@@ -603,23 +611,6 @@ tr:last-child td { border-bottom: none; }
   z-index: 1000;
   flex-direction: column;
   gap: 18px;
+  color: var(--gold);
 }
-.loading-screen .brand { font-size: 24px; }
-
-/* Hidden helper */
-.hidden { display: none !important; }
-
-@media (max-width: 900px) {
-  .sidebar { width: 60px; }
-  .sidebar-brand, .nav-section-label, .nav-item span:not(.nav-badge) { display: none; }
-  .nav-item { justify-content: center; }
-  .admin-main { padding: 18px 16px; }
-}
-
-/* Print styles for invoice */
-@media print {
-  body { background: #fff; color: #000; }
-  .no-print { display: none !important; }
-  .invoice { padding: 40px; }
-  .invoice * { color: #000 !important; background: #fff !important; border-color: #888 !important; }
-}
+.loading-screen .brand { font-size: 26px; color: var(--gold); -webkit-text
