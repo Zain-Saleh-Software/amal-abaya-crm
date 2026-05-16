@@ -118,9 +118,9 @@ function renderStorefront() {
     ${renderPromo()}
     ${renderHeader()}
     ${renderHero()}
+    ${renderFeatures()}
     ${renderCategories()}
     ${renderCollection(s)}
-    ${renderPromise()}
     ${renderAbout()}
     ${renderContact(s)}
     ${renderFooter(s)}
@@ -208,8 +208,9 @@ function renderCategories() {
   return `
     <section class="section" id="cats">
       <div class="section-head">
-        <div class="section-eyebrow">${t("cats_title")}</div>
-        <h2 class="section-title">${t("cats_sub")}</h2>
+        <h2>${t("cats_title")}</h2>
+        <div class="line"></div>
+        <p class="sub">${t("cats_sub")}</p>
       </div>
       <div class="categories">
         ${cats.map(c => `
@@ -232,10 +233,11 @@ function renderCollection(s) {
   return `
     <section class="section" id="collection">
       <div class="section-head">
-        <div class="section-eyebrow">${t("collection_title")}</div>
-        <h2 class="section-title">${t("collection_sub")}</h2>
+        <h2>${t("collection_title")}</h2>
+        <div class="line"></div>
+        <p class="sub">${t("collection_sub")}</p>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:36px;">
+      <div class="cat-chips">
         ${cats.map(id => `<button class="opt-chip ${_activeCategory===id?'active':''}" onclick="setCategory('${id}')">${t(id==='all'?'cat_all':'cat_'+id)}</button>`).join("")}
       </div>
       <div class="product-grid">
@@ -286,23 +288,21 @@ function productCard(p) {
   `;
 }
 
-function renderPromise() {
+function renderFeatures() {
   const items = [
-    { icon: ICONS.truck,  t_t: "promise_ship_t", t_s: "promise_ship_s" },
-    { icon: ICONS.shield, t_t: "promise_qual_t", t_s: "promise_qual_s" },
-    { icon: ICONS.chat,   t_t: "promise_wa_t",   t_s: "promise_wa_s" },
+    { icon: ICONS.sparkle, t_t: "promise_qual_t", t_s: "promise_qual_s" },
+    { icon: ICONS.truck,   t_t: "promise_ship_t", t_s: "promise_ship_s" },
+    { icon: ICONS.chat,    t_t: "promise_wa_t",   t_s: "promise_wa_s" },
   ];
   return `
-    <section class="section" style="padding-top:0;padding-bottom:0;">
-      <div class="promise">
-        ${items.map(i => `
-          <div class="promise-item">
-            <div class="icon">${i.icon}</div>
-            <h4>${t(i.t_t)}</h4>
-            <p>${t(i.t_s)}</p>
-          </div>
-        `).join("")}
-      </div>
+    <section class="features">
+      ${items.map(i => `
+        <div class="feature">
+          <div class="icon">${i.icon}</div>
+          <h4>${t(i.t_t)}</h4>
+          <p>${t(i.t_s)}</p>
+        </div>
+      `).join("")}
     </section>
   `;
 }
@@ -314,7 +314,8 @@ function renderAbout() {
         <div class="visual">${ICONS.silhouette}</div>
         <div>
           <div class="section-eyebrow">${t("about_eyebrow")}</div>
-          <h2 class="section-title" style="text-align:start;">${t("about_title")}</h2>
+          <h2 style="font-family:var(--ff-display-ar);font-size:clamp(26px,3.5vw,38px);font-weight:800;margin:0 0 12px;">${t("about_title")}</h2>
+          <div style="width:60px;height:3px;background:linear-gradient(90deg,var(--gold),transparent);margin-bottom:18px;"></div>
           <p class="lead">${t("about_lead")}</p>
           <p>${t("about_p1")}</p>
           <p>${t("about_p2")}</p>
@@ -331,8 +332,9 @@ function renderContact(s) {
   return `
     <section class="section" id="contact">
       <div class="section-head">
-        <div class="section-eyebrow">${t("contact_title")}</div>
-        <h2 class="section-title">${t("contact_sub")}</h2>
+        <h2>${t("contact_title")}</h2>
+        <div class="line"></div>
+        <p class="sub">${t("contact_sub")}</p>
       </div>
       <div class="contact-grid">
         <a href="tel:${phone}" class="contact-card">
